@@ -1,1 +1,269 @@
+name: Build RAS Knowledge Book
 
+on:
+  workflow_dispatch:
+    inputs:
+      subject_filter:
+        description: "Optional subject ID. Leave blank for complete syllabus."
+        required: false
+        default: ""
+        type: string
+
+      max_parallel:
+        description: "Maximum parallel research jobs."
+        required: false
+        default: "20"
+        type: string
+
+      rebuild:
+        description: "Rebuild existing chapters."
+        required: false
+        default: "true"
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+
+  prepare:
+
+    runs-on: ubuntu-latest
+
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: Flatten syllabus
+        run: |
+          python scripts/flatten_syllabus.py
+
+      - name: Build topic matrix
+        id: matrix
+        env:
+          SUBJECT_FILTER: ${{ inputs.subject_filter }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+
+          with open("work/topics.json", encoding="utf-8") as f:
+              topics = json.load(f)
+
+          subject_filter = os.environ.get(
+              "SUBJECT_FILTER",
+              ""
+          ).strip()
+
+          if subject_filter:
+              topics = [
+                  t for t in topics
+                  if t["subject_id"] == subject_filter
+              ]
+
+          matrix = {
+              "include": [
+                  {
+                      "topic_id": t["topic_id"],
+                      "subject_id": t["subject_id"],
+                      "title": t["topic_title_en"]
+                  }
+                  for t in topics
+              ]
+          }
+
+          with open(
+              "work/matrix.json",
+              "w",
+              encoding="utf-8"
+          ) as f:
+              json.dump(
+                  matrix,
+                  f,
+                  ensure_ascii=False
+              )
+
+          print(
+              f"Selected {len(topics)} topics."
+          )
+
+          with open(
+              os.environ["GITHUB_OUTPUT"],
+              "a",
+              encoding="utf-8"
+          ) as out:
+              compact = json.dumps(
+                  matrix,
+                  ensure_ascii=False,
+                  separators=(",", ":")
+              )
+              out.write(
+                  f"matrix={compact}\n"
+              )
+
+      - name: Upload topic list
+        uses: actions/upload-artifact@v4
+        with:
+          name: topic-matrix
+          path: work/topics.json
+          retention-days: 3
+
+
+  research:
+
+    needs: prepare
+
+    strategy:
+      fail-fast: false
+      max-parallel: ${{ fromJSON(inputs.max_parallel) }}
+      matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 30
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: Create work directory
+        run: |
+          mkdir -p work
+
+      - name: Recreate topic list
+        run: |
+          python scripts/flatten_syllabus.py
+
+      - name: Research topic
+        env:
+          TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python scripts/research_topic.py \
+            "${{ matrix.topic_id }}"
+
+      - name: Generate chapter
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python scripts/generate_chapter.py \
+            "${{ matrix.topic_id }}"
+
+      - name: Upload topic result
+        uses: actions/upload-artifact@v4
+        with:
+          name: topic-${{ matrix.topic_id }}
+          path: |
+            work/research/${{ matrix.topic_id }}/
+            work/chapters/${{ matrix.topic_id }}.md
+          retention-days: 3
+
+
+  assemble:
+
+    needs: research
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 30
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Download all topic artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: collected
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: Restore generated files
+        shell: bash
+        run: |
+          mkdir -p work/research
+          mkdir -p work/chapters
+
+          find collected \
+            -type f \
+            -path '*/research.json' \
+            | while read file; do
+                topic_id="$(basename "$(dirname "$file")")"
+                mkdir -p "work/research/$topic_id"
+                cp "$file" \
+                  "work/research/$topic_id/research.json"
+              done
+
+          find collected \
+            -type f \
+            -path '*/raw_sources.json' \
+            | while read file; do
+                topic_id="$(basename "$(dirname "$file")")"
+                mkdir -p "work/research/$topic_id"
+                cp "$file" \
+                  "work/research/$topic_id/raw_sources.json"
+              done
+
+          find collected \
+            -type f \
+            -name '*.md' \
+            | while read file; do
+                cp "$file" work/chapters/
+              done
+
+      - name: Flatten syllabus
+        run: |
+          python scripts/flatten_syllabus.py
+
+      - name: Audit citations
+        run: |
+          python scripts/audit_chapters.py
+
+      - name: Build book
+        run: |
+          python scripts/build_book.py
+
+      - name: Upload final book
+        uses: actions/upload-artifact@v4
+        with:
+          name: RAS-Pre-2026-Knowledge-Book
+          path: |
+            output/
+            work/audits/
+            work/topics.json
+          retention-days: 30
+          compression-level: 6
