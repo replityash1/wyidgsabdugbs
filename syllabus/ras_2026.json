@@ -1,1 +1,667 @@
-
+{
+  "exam": "RAS Pre 2026",
+  "subjects": [
+    {
+      "id": "rajasthan_history_culture",
+      "title_hi": "राजस्थान का इतिहास, कला, संस्कृति, साहित्य, परम्परा एवं विरासत",
+      "title_en": "History, Art, Culture, Literature, Tradition and Heritage of Rajasthan",
+      "completed": false,
+      "progress": 0,
+      "topics": [
+        {
+          "id": "prehistoric_sites_rajasthan",
+          "title_hi": "राजस्थान के प्रागैतिहासिक स्थल – पुरापाषाण काल से लेकर ताम्रपाषाण काल तक और कांस्य युग",
+          "title_en": "Prehistoric sites of Rajasthan – from Paleolithic to Chalcolithic age and Bronze age",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": []
+        },
+        {
+          "id": "ancient_rajasthan_society_culture",
+          "title_hi": "प्राचीन राजस्थान का समाज और संस्कृति",
+          "title_en": "Society and culture of Ancient Rajasthan",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": []
+        },
+        {
+          "id": "sources_of_rajasthan_history",
+          "title_hi": "राजस्थान इतिहास के स्रोतः पुरातात्विक, अभिलेखीय, साहित्यिक और मुद्राशास्त्रीय",
+          "title_en": "Sources of Rajasthan history: Archaeological, Epigraphic, Literary and Numismatic",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "archaeological_sources", "title_hi": "पुरातात्विक स्रोत", "title_en": "Archaeological sources", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "epigraphic_sources", "title_hi": "अभिलेखीय स्रोत", "title_en": "Epigraphic sources", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "literary_sources_rajasthan", "title_hi": "साहित्यिक स्रोत", "title_en": "Literary sources", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "numismatic_sources", "title_hi": "मुद्राशास्त्रीय स्रोत", "title_en": "Numismatic sources", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        },
+        {
+          "id": "major_dynasties_political_cultural_achievements",
+          "title_hi": "राजस्थान के मुख्य राजवंशों के प्रमुख शासकों की राजनीतिक एवं सांस्कृतिक उपलब्धियाँ",
+          "title_en": "Political and cultural achievements of prominent rulers of major dynasties of Rajasthan",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": []
+        },
+        {
+          "id": "cooperation_resistance_central_power",
+          "title_hi": "केंद्रीय सत्ता के साथ सहयोग एवं प्रतिरोध",
+          "title_en": "Cooperation and resistance with the central power",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": []
+        },
+        {
+          "id": "medieval_administrative_revenue_system",
+          "title_hi": "मध्यकालीन राजस्थान में प्रशासनिक एवं राजस्व व्यवस्था",
+          "title_en": "Administrative and revenue system in medieval Rajasthan",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": []
+        },
+        {
+          "id": "political_social_situation_18_19_century",
+          "title_hi": "18वीं–19वीं शताब्दी में राजनीतिक और सामाजिक स्थिति",
+          "title_en": "Political and social situation in the 18th–19th century",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": []
+        },
+        {
+          "id": "peasant_tribal_movements_20th_century",
+          "title_hi": "20वीं शताब्दी में किसान और आदिवासी आंदोलन",
+          "title_en": "Peasant and tribal movements in the 20th century",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": []
+        },
+        {
+          "id": "praja_mandal_movement_awakening",
+          "title_hi": "प्रजा मंडल आंदोलन और जन जागृति",
+          "title_en": "Praja Mandal movement and public awakening",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": []
+        },
+        {
+          "id": "integration_of_rajasthan",
+          "title_hi": "राजस्थान का एकीकरण",
+          "title_en": "Integration of Rajasthan",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": []
+        },
+        {
+          "id": "architectural_traditions_rajasthan",
+          "title_hi": "राजस्थान की स्थापत्य परंपराएँ",
+          "title_en": "Architectural traditions of Rajasthan",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "temples_rajasthan", "title_hi": "मंदिर", "title_en": "Temples", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "forts_rajasthan", "title_hi": "किले", "title_en": "Forts", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "palaces_rajasthan", "title_hi": "महल", "title_en": "Palaces", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "monuments_rajasthan", "title_hi": "स्मारक", "title_en": "Monuments", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "man_made_reservoirs_rajasthan", "title_hi": "मानव निर्मित जलाशय", "title_en": "Man-made reservoirs", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        },
+        {
+          "id": "painting_handicraft_styles",
+          "title_hi": "चित्रकला और हस्तशिल्प की विभिन्न शैलियाँ",
+          "title_en": "Various styles of painting and handicrafts",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": []
+        },
+        {
+          "id": "performing_arts_rajasthan",
+          "title_hi": "प्रदर्शन कलाएँ: लोक नृत्य और नाटक, संगीत (शास्त्रीय और लोक) और वाद्ययंत्र",
+          "title_en": "Performing arts: Folk dance and drama, music (classical and folk) and musical instruments",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "folk_dance_drama", "title_hi": "लोक नृत्य और नाटक", "title_en": "Folk dance and drama", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "music_classical_folk", "title_hi": "संगीत (शास्त्रीय और लोक)", "title_en": "Music (classical and folk)", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "musical_instruments_rajasthan", "title_hi": "वाद्ययंत्र", "title_en": "Musical instruments", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        },
+        {
+          "id": "language_literature_rajasthan",
+          "title_hi": "भाषा एवं साहित्य",
+          "title_en": "Language and Literature",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "dialects_of_rajasthani", "title_hi": "राजस्थानी भाषा की बोलियाँ", "title_en": "Dialects of the Rajasthani language", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "rajasthani_literature_folk_literature", "title_hi": "राजस्थानी भाषा का साहित्य और लोक साहित्य", "title_en": "Literature and folk literature of the Rajasthani language", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        },
+        {
+          "id": "religious_life_rajasthan",
+          "title_hi": "धार्मिक जीवन",
+          "title_en": "Religious life",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "religious_communities_rajasthan", "title_hi": "राजस्थान में धार्मिक समुदाय", "title_en": "Religious communities in Rajasthan", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "saints_and_sects", "title_hi": "संत और संप्रदाय", "title_en": "Saints and sects", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "folk_deities_religious_practices", "title_hi": "राजस्थान के लोक देवता और धार्मिक प्रथाएँ", "title_en": "Folk deities and religious practices of Rajasthan", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        },
+        {
+          "id": "social_life_rajasthan",
+          "title_hi": "राजस्थान में सामाजिक जीवन",
+          "title_en": "Social life in Rajasthan",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "fairs_and_festivals", "title_hi": "मेले और त्यौहार", "title_en": "Fairs and festivals", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "social_customs_traditions", "title_hi": "सामाजिक रीति–रिवाज और परंपराएँ", "title_en": "Social customs and traditions", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "costumes_and_ornaments", "title_hi": "वेशभूषा और आभूषण", "title_en": "Costumes and ornaments", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        },
+        {
+          "id": "eminent_personalities_rajasthan",
+          "title_hi": "राजस्थान के प्रमुख व्यक्तित्व",
+          "title_en": "Eminent personalities of Rajasthan",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "indian_history",
+      "title_hi": "भारत का इतिहास",
+      "title_en": "History of India",
+      "completed": false,
+      "progress": 0,
+      "topics": [
+        {
+          "id": "ancient_medieval_period",
+          "title_hi": "प्राचीनकाल एवं मध्यकाल",
+          "title_en": "Ancient Period and Medieval Period",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "cultural_foundations_indus_vedic", "title_hi": "भारत के सांस्कृतिक आधार – सिंधु और वैदिक युग", "title_en": "Cultural foundations of India – Indus and Vedic age", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "religious_thoughts_6th_century_bce", "title_hi": "छठी शताब्दी ईसा पूर्व के धार्मिक विचार – आजीवक, बौद्ध और जैन धर्म", "title_en": "Religious thoughts of the 6th century BCE – Ajivika, Buddhism and Jainism", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "achievements_major_dynasties_ancient", "title_hi": "मुख्य राजवंशों के प्रमुख शासकों की उपलब्धियाँ: मौर्य, कुषाण, सातवाहन, गुप्त, चालुक्य, पल्लव और चोल", "title_en": "Achievements of prominent rulers of major dynasties: Maurya, Kushan, Satavahana, Gupta, Chalukya, Pallava and Chola", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "art_architecture_scientific_development_ancient", "title_hi": "प्राचीन भारत में कला एवं स्थापत्य कला एवं वैज्ञानिक विकास", "title_en": "Art and architecture and scientific development in Ancient India", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "indian_knowledge_value_system", "title_hi": "भारतीय ज्ञान एवं मूल्य व्यवस्था: वर्णाश्रम, पुरुषार्थ, संस्कार, दर्शन एवं शिक्षा व्यवस्था", "title_en": "Indian knowledge and value system: Varnashrama, Purushartha, Sanskara, Philosophy and education system", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "sultanate_period_achievements", "title_hi": "सल्तनत काल: प्रमुख राजवंशों की उपलब्धियाँ, विजयनगर साम्राज्य की राजनीतिक और सांस्कृतिक उपलब्धियाँ", "title_en": "Sultanate period: Achievements of major dynasties, political and cultural achievements of the Vijayanagar Empire", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "mughal_period_administration_policies", "title_hi": "मुगल काल: प्रशासन एवं विभिन्न नीतियाँ: मराठा", "title_en": "Mughal period: Administration and various policies: Maratha", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "art_architecture_literature_painting_music_medieval", "title_hi": "मध्यकाल में कला एवं वास्तुकला, साहित्य, चित्रकला और संगीत का विकास", "title_en": "Development of art and architecture, literature, painting and music in the medieval period", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "religious_movements_bhakti_sufi", "title_hi": "धार्मिक आंदोलन और भक्ति एवं सूफी आंदोलन का योगदान", "title_en": "Religious movements and the contribution of the Bhakti and Sufi movements", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        },
+        {
+          "id": "modern_period",
+          "title_hi": "आधुनिक काल (प्रारम्भिक 19वीं शताब्दी से 2000 तक)",
+          "title_en": "Modern Period (early 19th century to 2000)",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "british_imperialism_resistance", "title_hi": "ब्रिटिश साम्राज्यवाद और प्रतिरोध – मराठा, मैसूर, सिख", "title_en": "British imperialism and resistance – Maratha, Mysore, Sikh", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "revolt_of_1857", "title_hi": "1857 का विद्रोह", "title_en": "Revolt of 1857", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "british_policies_nationalism_socioreligious_movements", "title_hi": "ब्रिटिश राजनीतिक, आर्थिक और प्रशासनिक नीतियाँ। राष्ट्रवाद का उदय, सामाजिक–धार्मिक आंदोलन", "title_en": "British political, economic and administrative policies. Rise of nationalism, socio-religious movements", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "freedom_struggle_indian_national_movement", "title_hi": "स्वतंत्रता संग्राम और भारतीय राष्ट्रीय आंदोलन– विकास, चरण और प्रमुख घटनाएँ", "title_en": "Freedom struggle and Indian National Movement – development, phases and major events", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "revolutionaries_regional_movements", "title_hi": "क्रांतिकारी और विभिन्न क्षेत्रीय आंदोलन", "title_en": "Revolutionaries and various regional movements", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "towards_independence_partition", "title_hi": "स्वतंत्रता और विभाजन की ओर", "title_en": "Towards independence and partition", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "nation_building_post_independence_2000", "title_hi": "स्वातंत्रोत्तर राष्ट्र निर्माण (2000 तक), राज्य पुनर्गठन, नेहरू युग में संस्थानिक निर्माण, योजना एवं आर्थिक सुधार, विज्ञान एवं प्रौद्योगिकी का विकास", "title_en": "Post-independence nation building (up to 2000), reorganization of states, institution building in the Nehru era, planning and economic reforms, development of science and technology", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "world_india_geography",
+      "title_hi": "विश्व एवं भारत का भूगोल",
+      "title_en": "Geography of World and India",
+      "completed": false,
+      "progress": 0,
+      "topics": [
+        {
+          "id": "world_geography",
+          "title_hi": "विश्व का भूगोल",
+          "title_en": "Geography of the World",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "physical_features_world", "title_hi": "भौतिक स्वरूपः पर्वत, पठार, मैदान एवं मरुस्थल", "title_en": "Physical features: mountains, plateaus, plains and deserts", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "major_rivers_lakes_world", "title_hi": "प्रमुख नदियाँ एवं झीलें", "title_en": "Major rivers and lakes", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "natural_vegetation_world", "title_hi": "प्राकृतिक वनस्पति", "title_en": "Natural vegetation", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "agriculture_types_distribution_crops_world", "title_hi": "कृषि: प्रकार, वितरण तथा प्रमुख फसलें", "title_en": "Agriculture: types, distribution and major crops", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "industrial_regions_industries_world", "title_hi": "प्रमुख औद्योगिक प्रदेश तथा प्रमुख उद्योग", "title_en": "Major industrial regions and major industries", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "transport_system_world", "title_hi": "परिवहन तन्त्र", "title_en": "Transport system", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "environmental_issues_world", "title_hi": "पर्यावरणीय मुद्दे – मरूस्थलीकरण, वनोन्मूलन, जलवायु परिवर्तन एवं ग्लोबल वार्मिंग (वैश्विक तापन), ओजोन अवक्षय", "title_en": "Environmental issues – desertification, deforestation, climate change and global warming, ozone depletion", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        },
+        {
+          "id": "india_geography",
+          "title_hi": "भारत का भूगोल",
+          "title_en": "Geography of India",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "physical_divisions_india", "title_hi": "भौतिक विभाग", "title_en": "Physical divisions", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "climate_india", "title_hi": "जलवायु", "title_en": "Climate", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "major_rivers_lakes_india", "title_hi": "प्रमुख नदियाँ एवं झीलें", "title_en": "Major rivers and lakes", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "irrigation_india", "title_hi": "सिंचाई", "title_en": "Irrigation", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "agriculture_major_crops_india", "title_hi": "कृषि: प्रमुख फसलें", "title_en": "Agriculture: major crops", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "minerals_metallic_nonmetallic_india", "title_hi": "खनिजः धात्विक और अधात्विक", "title_en": "Minerals: metallic and non-metallic", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "industrial_regions_industries_india", "title_hi": "प्रमुख औद्योगिक प्रदेश तथा प्रमुख उद्योग", "title_en": "Major industrial regions and major industries", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rajasthan_geography",
+      "title_hi": "राजस्थान का भूगोल",
+      "title_en": "Geography of Rajasthan",
+      "completed": false,
+      "progress": 0,
+      "topics": [
+        { "id": "location_extent_physical_divisions_rajasthan", "title_hi": "राजस्थानः अवस्थिति, विस्तार तथा भौतिक विभाग", "title_en": "Rajasthan: location, extent and physical divisions", "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0, "children": [] },
+        { "id": "rivers_lakes_rajasthan", "title_hi": "नदियाँ एवं झीलें", "title_en": "Rivers and lakes", "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0, "children": [] },
+        { "id": "climate_characteristics_rajasthan", "title_hi": "जलवायु की विशेषताएं", "title_en": "Characteristics of climate", "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0, "children": [] },
+        { "id": "natural_vegetation_biodiversity_conservation_rajasthan", "title_hi": "प्राकृतिक वनस्पति, जैव विविधता तथा संरक्षण", "title_en": "Natural vegetation, biodiversity and conservation", "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0, "children": [] },
+        { "id": "soil_rajasthan", "title_hi": "मृदा", "title_en": "Soil", "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0, "children": [] },
+        { "id": "agriculture_rajasthan", "title_hi": "कृषि", "title_en": "Agriculture", "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0, "children": [] },
+        { "id": "livestock_rajasthan", "title_hi": "पशुधन", "title_en": "Livestock", "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0, "children": [] },
+        { "id": "irrigation_rajasthan", "title_hi": "सिंचाई", "title_en": "Irrigation", "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0, "children": [] },
+        { "id": "population_growth_density_literacy_sexratio", "title_hi": "जनसंख्या– वृद्धि, घनत्व, साक्षरता, लिंगानुपात", "title_en": "Population – growth, density, literacy, sex ratio", "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0, "children": [] },
+        { "id": "urbanization_rajasthan", "title_hi": "नगरीकरण", "title_en": "Urbanization", "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0, "children": [] },
+        { "id": "tribes_rajasthan", "title_hi": "जनजातियाँ", "title_en": "Tribes", "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0, "children": [] },
+        { "id": "minerals_metallic_nonmetallic_rajasthan", "title_hi": "खनिज– धात्विक एवं अधात्विक", "title_en": "Minerals – metallic and non-metallic", "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0, "children": [] },
+        { "id": "tourism_rajasthan", "title_hi": "पर्यटन", "title_en": "Tourism", "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0, "children": [] }
+      ]
+    },
+    {
+      "id": "indian_polity_constitution",
+      "title_hi": "भारतीय संविधान, राजनीतिक व्यवस्था और शासन",
+      "title_en": "Indian Constitution, Political System and Governance",
+      "completed": false,
+      "progress": 0,
+      "topics": [
+        {
+          "id": "constitution_making_preamble_citizenship_rights_duties",
+          "title_hi": "संविधान का निर्माण, उद्देशिका, नागरिकता, मौलिक अधिकार, राज्य की नीति के निदेशक तत्व और मौलिक कर्तव्य",
+          "title_en": "Making of the Constitution, Preamble, Citizenship, Fundamental Rights, Directive Principles of State Policy and Fundamental Duties",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "constitution_making", "title_hi": "संविधान का निर्माण", "title_en": "Making of the Constitution", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "preamble", "title_hi": "उद्देशिका", "title_en": "Preamble", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "citizenship", "title_hi": "नागरिकता", "title_en": "Citizenship", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "fundamental_rights", "title_hi": "मौलिक अधिकार", "title_en": "Fundamental Rights", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "directive_principles", "title_hi": "राज्य की नीति के निदेशक तत्व", "title_en": "Directive Principles of State Policy", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "fundamental_duties", "title_hi": "मौलिक कर्तव्य", "title_en": "Fundamental Duties", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        },
+        {
+          "id": "federal_government_executive_legislature_judiciary",
+          "title_hi": "संघीय सरकार– कार्यपालिका, विधायिका और न्यायपालिका",
+          "title_en": "Federal Government – Executive, Legislature and Judiciary",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "executive_union", "title_hi": "कार्यपालिका", "title_en": "Executive", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "legislature_union", "title_hi": "विधायिका", "title_en": "Legislature", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "judiciary_union", "title_hi": "न्यायपालिका", "title_en": "Judiciary", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        },
+        {
+          "id": "centre_state_relations_emergency",
+          "title_hi": "संघ राज्य संबंध, आपातकालीन प्रावधान",
+          "title_en": "Centre-State Relations, Emergency Provisions",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "centre_state_relations", "title_hi": "संघ राज्य संबंध", "title_en": "Centre-State Relations", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "emergency_provisions", "title_hi": "आपातकालीन प्रावधान", "title_en": "Emergency Provisions", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        },
+        {
+          "id": "urban_rural_local_government",
+          "title_hi": "शहरी और ग्रामीण स्थानीय सरकार",
+          "title_en": "Urban and Rural Local Government",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "urban_local_government", "title_hi": "शहरी स्थानीय सरकार", "title_en": "Urban Local Government", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "rural_local_government", "title_hi": "ग्रामीण स्थानीय सरकार", "title_en": "Rural Local Government", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        },
+        {
+          "id": "constitutional_bodies_ec_upsc_nhrc_ncw_ncpcr_niti",
+          "title_hi": "निर्वाचन आयोग, संघ लोक सेवा आयोग, राष्ट्रीय मानवाधिकार आयोग, राष्ट्रीय महिला आयोग, राष्ट्रीय बाल अधिकार संरक्षण आयोग और नीति आयोग",
+          "title_en": "Election Commission, Union Public Service Commission, National Human Rights Commission, National Commission for Women, National Commission for Protection of Child Rights and NITI Aayog",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "election_commission", "title_hi": "निर्वाचन आयोग", "title_en": "Election Commission", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "upsc", "title_hi": "संघ लोक सेवा आयोग", "title_en": "Union Public Service Commission", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "nhrc", "title_hi": "राष्ट्रीय मानवाधिकार आयोग", "title_en": "National Human Rights Commission", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "ncw", "title_hi": "राष्ट्रीय महिला आयोग", "title_en": "National Commission for Women", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "ncpcr", "title_hi": "राष्ट्रीय बाल अधिकार संरक्षण आयोग", "title_en": "National Commission for Protection of Child Rights", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "niti_aayog", "title_hi": "नीति आयोग", "title_en": "NITI Aayog", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        },
+        {
+          "id": "public_policy_citizen_charter_social_audit_grievance",
+          "title_hi": "लोक नीति, नागरिक चार्टर, सामाजिक अंकेक्षण और शिकायत निवारण प्रणाली",
+          "title_en": "Public Policy, Citizen Charter, Social Audit and Grievance Redressal System",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "public_policy", "title_hi": "लोक नीति", "title_en": "Public Policy", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "citizen_charter", "title_hi": "नागरिक चार्टर", "title_en": "Citizen Charter", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "social_audit", "title_hi": "सामाजिक अंकेक्षण", "title_en": "Social Audit", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "grievance_redressal_system", "title_hi": "शिकायत निवारण प्रणाली", "title_en": "Grievance Redressal System", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        },
+        {
+          "id": "lokpal_cvc_cic",
+          "title_hi": "लोकपाल, केंद्रीय सतर्कता आयोग, केंद्रीय सूचना आयोग",
+          "title_en": "Lokpal, Central Vigilance Commission, Central Information Commission",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "lokpal", "title_hi": "लोकपाल", "title_en": "Lokpal", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "cvc", "title_hi": "केंद्रीय सतर्कता आयोग", "title_en": "Central Vigilance Commission", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "cic", "title_hi": "केंद्रीय सूचना आयोग", "title_en": "Central Information Commission", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rajasthan_political_administrative_system",
+      "title_hi": "राजस्थान की राजनीतिक एवं प्रशासनिक व्यवस्था",
+      "title_en": "Political and Administrative System of Rajasthan",
+      "completed": false,
+      "progress": 0,
+      "topics": [
+        {
+          "id": "governor_cm_council_assembly_judiciary",
+          "title_hi": "राज्यपाल, मुख्यमंत्री एवं मंत्रिपरिषद, राजस्थान विधान सभा, राजस्थान उच्च न्यायालय, अधीनस्थ न्यायालय एवं अन्य न्यायिक निकाय, महाधिवक्ता",
+          "title_en": "Governor, Chief Minister and Council of Ministers, Rajasthan Legislative Assembly, Rajasthan High Court, Subordinate Courts and other Judicial Bodies, Advocate General",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "governor_rajasthan", "title_hi": "राज्यपाल", "title_en": "Governor", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "cm_council_of_ministers", "title_hi": "मुख्यमंत्री एवं मंत्रिपरिषद", "title_en": "Chief Minister and Council of Ministers", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "rajasthan_legislative_assembly", "title_hi": "राजस्थान विधान सभा", "title_en": "Rajasthan Legislative Assembly", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "rajasthan_high_court", "title_hi": "राजस्थान उच्च न्यायालय", "title_en": "Rajasthan High Court", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "subordinate_courts_judicial_bodies", "title_hi": "अधीनस्थ न्यायालय एवं अन्य न्यायिक निकाय", "title_en": "Subordinate Courts and other Judicial Bodies", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "advocate_general", "title_hi": "महाधिवक्ता", "title_en": "Advocate General", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        },
+        {
+          "id": "state_secretariat_district_administration",
+          "title_hi": "मुख्य सचिव, राज्य सचिवालय, विभिन्न विभागों के निदेशालय, संभागीय आयुक्त, जिला कलेक्टर/जिला मजिस्ट्रेट, पुलिस अधीक्षक, उप–खण्ड अधिकारी, तहसीलदार",
+          "title_en": "Chief Secretary, State Secretariat, Directorates of various Departments, Divisional Commissioner, District Collector/District Magistrate, Superintendent of Police, Sub-Divisional Officer, Tehsildar",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "chief_secretary", "title_hi": "मुख्य सचिव", "title_en": "Chief Secretary", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "state_secretariat", "title_hi": "राज्य सचिवालय", "title_en": "State Secretariat", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "directorates_of_departments", "title_hi": "विभिन्न विभागों के निदेशालय", "title_en": "Directorates of various Departments", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "divisional_commissioner", "title_hi": "संभागीय आयुक्त", "title_en": "Divisional Commissioner", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "district_collector_magistrate", "title_hi": "जिला कलेक्टर/जिला मजिस्ट्रेट", "title_en": "District Collector/District Magistrate", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "superintendent_of_police", "title_hi": "पुलिस अधीक्षक", "title_en": "Superintendent of Police", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "sub_divisional_officer", "title_hi": "उप–खण्ड अधिकारी", "title_en": "Sub-Divisional Officer", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "tehsildar", "title_hi": "तहसीलदार", "title_en": "Tehsildar", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        },
+        {
+          "id": "state_commissions_boards_rajasthan",
+          "title_hi": "राजस्थान लोक सेवा आयोग, राजस्थान राज्य निर्वाचन आयोग, राजस्थान सूचना आयोग, राजस्थान राज्य महिला आयोग, राजस्व मंडल, लोकायुक्त",
+          "title_en": "Rajasthan Public Service Commission, Rajasthan State Election Commission, Rajasthan Information Commission, Rajasthan State Women Commission, Board of Revenue, Lokayukta",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "rpsc", "title_hi": "राजस्थान लोक सेवा आयोग", "title_en": "Rajasthan Public Service Commission", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "state_election_commission_rajasthan", "title_hi": "राजस्थान राज्य निर्वाचन आयोग", "title_en": "Rajasthan State Election Commission", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "rajasthan_information_commission", "title_hi": "राजस्थान सूचना आयोग", "title_en": "Rajasthan Information Commission", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "rajasthan_state_women_commission", "title_hi": "राजस्थान राज्य महिला आयोग", "title_en": "Rajasthan State Women Commission", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "board_of_revenue", "title_hi": "राजस्व मंडल", "title_en": "Board of Revenue", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "lokayukta", "title_hi": "लोकायुक्त", "title_en": "Lokayukta", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        },
+        {
+          "id": "panchayati_raj_municipal_administration_rajasthan",
+          "title_hi": "राजस्थान में पंचायती राज एवं नगर पालिकाओं का प्रशासन",
+          "title_en": "Administration of Panchayati Raj and Municipalities in Rajasthan",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "panchayati_raj_rajasthan", "title_hi": "पंचायती राज", "title_en": "Panchayati Raj", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "municipal_administration_rajasthan", "title_hi": "नगर पालिकाओं का प्रशासन", "title_en": "Administration of Municipalities", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "economic_concepts_indian_economy",
+      "title_hi": "आर्थिक अवधारणाएँ एवं भारतीय अर्थव्यवस्था",
+      "title_en": "Economic Concepts and Indian Economy",
+      "completed": false,
+      "progress": 0,
+      "topics": [
+        {
+          "id": "economic_growth_development_environment_sustainable",
+          "title_hi": "आर्थिक संवृद्धि और विकास। पर्यावरण क्षरण और सतत् विकास",
+          "title_en": "Economic Growth and Development. Environmental degradation and sustainable development",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "economic_growth_and_development", "title_hi": "आर्थिक संवृद्धि और विकास", "title_en": "Economic growth and development", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "environmental_degradation_sustainable_development", "title_hi": "पर्यावरण क्षरण और सतत् विकास", "title_en": "Environmental degradation and sustainable development", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        },
+        {
+          "id": "measures_of_development",
+          "title_hi": "विकास के मापक– पारंपरिक माप, मानव विकास सूचकांक और अन्य संबंधित सूचकांक",
+          "title_en": "Measures of Development – Traditional measures, Human Development Index and other related indices",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "traditional_measures_of_development", "title_hi": "पारंपरिक माप", "title_en": "Traditional measures", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "human_development_index", "title_hi": "मानव विकास सूचकांक", "title_en": "Human Development Index", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "other_related_indices", "title_hi": "अन्य संबंधित सूचकांक", "title_en": "Other related indices", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        },
+        {
+          "id": "monetary_fiscal_policy_budget_resource_mobilization",
+          "title_hi": "आर्थिक विकास में मौद्रिक और राजकोषीय नीति की भूमिका। भारत सरकार का नवीनतम बजट और संसाधन संग्रहण",
+          "title_en": "Role of Monetary and Fiscal Policy in economic development. Latest Union Budget and resource mobilization",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "role_of_monetary_fiscal_policy", "title_hi": "आर्थिक विकास में मौद्रिक और राजकोषीय नीति की भूमिका", "title_en": "Role of monetary and fiscal policy in economic development", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "latest_union_budget_resource_mobilization", "title_hi": "भारत सरकार का नवीनतम बजट और संसाधन संग्रहण", "title_en": "Latest Union Budget and resource mobilization", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        },
+        {
+          "id": "fiscal_federalism_centre_state_finance_commission",
+          "title_hi": "राजकोषीय संघवाद– केन्द्र–राज्य वित्तीय संबंध और वित्त आयोग",
+          "title_en": "Fiscal Federalism – Centre-State financial relations and the Finance Commission",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "centre_state_financial_relations", "title_hi": "केन्द्र–राज्य वित्तीय संबंध", "title_en": "Centre-State financial relations", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "finance_commission", "title_hi": "वित्त आयोग", "title_en": "Finance Commission", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        },
+        {
+          "id": "agricultural_development_reforms",
+          "title_hi": "कृषिगत विकास– संस्थागत और तकनीकी पहलू। भारतीय कृषि में सुधार–चुनौतियां और सरकारी पहल",
+          "title_en": "Agricultural Development – institutional and technical aspects. Reforms in Indian agriculture – challenges and government initiatives",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "institutional_technical_aspects_agriculture", "title_hi": "संस्थागत और तकनीकी पहलू", "title_en": "Institutional and technical aspects", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "agri_reforms_challenges_govt_initiatives", "title_hi": "भारतीय कृषि में सुधार–चुनौतियां और सरकारी पहल", "title_en": "Reforms in Indian agriculture – challenges and government initiatives", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        },
+        {
+          "id": "industrial_growth_policy_reforms",
+          "title_hi": "औद्योगिक वृद्धि, स्वरूप, नीति और औद्योगिक सुधार– उदारीकरण, निजीकरण और वैश्वीकरण",
+          "title_en": "Industrial Growth, Nature, Policy and Industrial Reforms – Liberalization, Privatization and Globalization",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "industrial_growth_nature_policy", "title_hi": "औद्योगिक वृद्धि, स्वरूप, नीति", "title_en": "Industrial growth, nature and policy", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "liberalization_privatization_globalization", "title_hi": "औद्योगिक सुधार– उदारीकरण, निजीकरण और वैश्वीकरण", "title_en": "Industrial reforms – Liberalization, Privatization and Globalization", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        },
+        {
+          "id": "service_sector_role_energy_transport_communication",
+          "title_hi": "आर्थिक वृद्धि में सेवा क्षेत्र की भूमिका– चुनौतियां और अवसर। ऊर्जा, परिवहन और संचार",
+          "title_en": "Role of Service Sector in economic growth – challenges and opportunities. Energy, Transport and Communication",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "role_of_service_sector_challenges_opportunities", "title_hi": "आर्थिक वृद्धि में सेवा क्षेत्र की भूमिका– चुनौतियां और अवसर", "title_en": "Role of service sector in economic growth – challenges and opportunities", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "energy_transport_communication_india", "title_hi": "ऊर्जा, परिवहन और संचार", "title_en": "Energy, Transport and Communication", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        },
+        {
+          "id": "skill_development_employment_social_justice",
+          "title_hi": "कौशल विकास और रोजगार संवर्द्धन– कार्यक्रम और नीतियां। सामाजिक न्याय और सशक्तिकरण",
+          "title_en": "Skill Development and Employment Promotion – programs and policies. Social Justice and Empowerment",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "skill_development_employment_programs_policies", "title_hi": "कौशल विकास और रोजगार संवर्द्धन– कार्यक्रम और नीतियां", "title_en": "Skill development and employment promotion – programs and policies", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "social_justice_empowerment", "title_hi": "सामाजिक न्याय और सशक्तिकरण", "title_en": "Social justice and empowerment", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rajasthan_economy",
+      "title_hi": "राजस्थान की अर्थव्यवस्था",
+      "title_en": "Economy of Rajasthan",
+      "completed": false,
+      "progress": 0,
+      "topics": [
+        { "id": "macro_overview_state_budget", "title_hi": "अर्थव्यवस्था का वृहत् परिदृश्य और राज्य बजट", "title_en": "Macro overview of the economy and State Budget", "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0, "children": [] },
+        { "id": "agri_industry_service_status_issues_initiatives_rajasthan", "title_hi": "कृषि, उद्योग और सेवा क्षेत्र की मौजूदा स्थिति, मुद्दे और सरकारी पहल", "title_en": "Current status, issues and government initiatives in Agriculture, Industry and Service sector", "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0, "children": [] },
+        { "id": "infrastructure_energy_transport_communication_rajasthan", "title_hi": "आधारभूत संरचना का विकासः ऊर्जा, परिवहन और संचार", "title_en": "Infrastructure Development: Energy, Transport and Communication", "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0, "children": [] },
+        { "id": "rural_development_panchayati_raj_state_finance_commission", "title_hi": "ग्रामीण विकास, पंचायती राज और राज्य वित्त आयोग", "title_en": "Rural Development, Panchayati Raj and State Finance Commission", "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0, "children": [] },
+        { "id": "basic_social_services_education_health", "title_hi": "मूलभूत सामाजिक सेवाएं– शिक्षा और स्वास्थ्य", "title_en": "Basic Social Services – Education and Health", "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0, "children": [] },
+        { "id": "major_welfare_schemes_rajasthan", "title_hi": "राजस्थान सरकार की मुख्य कल्याणकारी योजनाएं", "title_en": "Major welfare schemes of the Government of Rajasthan", "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0, "children": [] }
+      ]
+    },
+    {
+      "id": "science_technology",
+      "title_hi": "विज्ञान एवं प्रौद्योगिकी",
+      "title_en": "Science and Technology",
+      "completed": false,
+      "progress": 0,
+      "topics": [
+        { "id": "basic_elements_science_daily_life", "title_hi": "दैनिक जीवन में विज्ञान के मूलभूत तत्व", "title_en": "Basic elements of science in daily life", "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0, "children": [] },
+        {
+          "id": "computers_ict",
+          "title_hi": "कम्प्यूटर्स; सूचना एवं संचार प्रौद्योगिकी",
+          "title_en": "Computers; Information and Communication Technology",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "computers", "title_hi": "कम्प्यूटर्स", "title_en": "Computers", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "information_communication_technology", "title_hi": "सूचना एवं संचार प्रौद्योगिकी", "title_en": "Information and Communication Technology", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        },
+        { "id": "defence_space_technology_india", "title_hi": "रक्षा एवं अंतरिक्ष प्रौद्योगिकी भारत के विशेष संदर्भ में", "title_en": "Defence and Space Technology with special reference to India", "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0, "children": [] },
+        {
+          "id": "genetics_variation_genetic_engineering_biotech_nanotech",
+          "title_hi": "वंशागति एवं विभिन्नता; अनुवांशिक–अभियांत्रिकी; जैव–प्रौद्योगिकी एवं नैनो–प्रौद्योगिकी",
+          "title_en": "Heredity and Variation; Genetic Engineering; Biotechnology and Nanotechnology",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "heredity_and_variation", "title_hi": "वंशागति एवं विभिन्नता", "title_en": "Heredity and Variation", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "genetic_engineering", "title_hi": "अनुवांशिक–अभियांत्रिकी", "title_en": "Genetic Engineering", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "biotechnology", "title_hi": "जैव–प्रौद्योगिकी", "title_en": "Biotechnology", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "nanotechnology", "title_hi": "नैनो–प्रौद्योगिकी", "title_en": "Nanotechnology", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        },
+        {
+          "id": "human_health_nutrition_disease_public_health",
+          "title_hi": "मानव स्वास्थ्य देखभाल; आहार एवं पोषण; रोग एवं सार्वजनिक स्वास्थ्य कार्यक्रम",
+          "title_en": "Human Health Care; Diet and Nutrition; Diseases and Public Health Programs",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "human_health_care", "title_hi": "मानव स्वास्थ्य देखभाल", "title_en": "Human Health Care", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "diet_and_nutrition", "title_hi": "आहार एवं पोषण", "title_en": "Diet and Nutrition", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "diseases_public_health_programs", "title_hi": "रोग एवं सार्वजनिक स्वास्थ्य कार्यक्रम", "title_en": "Diseases and Public Health Programs", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        },
+        { "id": "environmental_ecological_changes_impact_assessment", "title_hi": "पर्यावरणीय तथा पारिस्थितिकीय परिवर्तन एवं उनका प्रभाव मूल्यांकन", "title_en": "Environmental and Ecological changes and their impact assessment", "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0, "children": [] },
+        {
+          "id": "biodiversity_natural_resource_conservation_sustainable_dev",
+          "title_hi": "जैव–विविधता; प्राकृतिक संसाधनों का संरक्षण एवं संतत् विकास",
+          "title_en": "Biodiversity; Conservation of Natural Resources and Sustainable Development",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "biodiversity", "title_hi": "जैव–विविधता", "title_en": "Biodiversity", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "conservation_natural_resources_sustainable_development", "title_hi": "प्राकृतिक संसाधनों का संरक्षण एवं संतत् विकास", "title_en": "Conservation of Natural Resources and Sustainable Development", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        },
+        {
+          "id": "agri_horti_forestry_animal_husbandry_science_rajasthan",
+          "title_hi": "राजस्थान के विशेष संदर्भ में कृषि–विज्ञान, उद्यान–विज्ञान, वानिकी एवं पशुपालन",
+          "title_en": "Agricultural Science, Horticulture, Forestry and Animal Husbandry with special reference to Rajasthan",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "agricultural_science", "title_hi": "कृषि–विज्ञान", "title_en": "Agricultural Science", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "horticulture", "title_hi": "उद्यान–विज्ञान", "title_en": "Horticulture", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "forestry", "title_hi": "वानिकी", "title_en": "Forestry", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "animal_husbandry", "title_hi": "पशुपालन", "title_en": "Animal Husbandry", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        },
+        { "id": "government_programs_policies_science_tech_rajasthan_india", "title_hi": "राजस्थान तथा भारत में विज्ञान एवं प्रौद्योगिकी से संबंधित प्रमुख सरकारी कार्यक्रम एवं नीतियां", "title_en": "Major government programs and policies related to Science and Technology in Rajasthan and India", "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0, "children": [] },
+        {
+          "id": "innovations_indian_contributions_indigenization",
+          "title_hi": "अभिनव वैज्ञानिक एवं प्रौद्योगिकी प्रगति; विज्ञान एवं प्रौद्योगिकी में भारतीयों का योगदान; विज्ञान एवं प्रौद्योगिकी का स्वदेशीकरण",
+          "title_en": "Innovative Scientific and Technological Progress; Indian Contributions to Science and Technology; Indigenization of Science and Technology",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "innovative_scientific_technological_progress", "title_hi": "अभिनव वैज्ञानिक एवं प्रौद्योगिकी प्रगति", "title_en": "Innovative Scientific and Technological Progress", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "indian_contributions_science_tech", "title_hi": "विज्ञान एवं प्रौद्योगिकी में भारतीयों का योगदान", "title_en": "Indian Contributions to Science and Technology", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "indigenization_science_tech", "title_hi": "विज्ञान एवं प्रौद्योगिकी का स्वदेशीकरण", "title_en": "Indigenization of Science and Technology", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "reasoning_mental_ability",
+      "title_hi": "तार्किक विवेचन एवं मानसिक योग्यता",
+      "title_en": "Logical Reasoning and Mental Ability",
+      "completed": false,
+      "progress": 0,
+      "topics": [
+        {
+          "id": "logical_efficiency",
+          "title_hi": "तार्किक दक्षता (निगमनात्मक, आगमनात्मक, अपवर्तनात्मक)",
+          "title_en": "Logical Efficiency (Deductive, Inductive, Abductive)",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "statements_assumptions", "title_hi": "कथन एवं मान्यताएं", "title_en": "Statements and Assumptions", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "statements_arguments", "title_hi": "कथन एवं तर्क", "title_en": "Statements and Arguments", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "statements_conclusions", "title_hi": "कथन एवं निष्कर्ष", "title_en": "Statements and Conclusions", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "statement_course_of_action", "title_hi": "कथन–कार्यवाही", "title_en": "Statement and Course of Action", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "analytical_critical_reasoning", "title_hi": "विश्लेषणात्मक तर्कक्षमता/विवेचनात्मक तर्कक्षमता", "title_en": "Analytical Reasoning / Critical Reasoning", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        },
+        {
+          "id": "mental_ability",
+          "title_hi": "मानसिक योग्यता",
+          "title_en": "Mental Ability",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "number_letter_series", "title_hi": "संख्या/अक्षर अनुक्रम", "title_en": "Number/Letter Series", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "coding_decoding", "title_hi": "कूटवाचन (कोडिंग–डीकोडिंग)", "title_en": "Coding-Decoding", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "problems_on_relations", "title_hi": "संबंधों से संबंधित समस्याएं", "title_en": "Problems Related to Relations", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "direction_sense_test", "title_hi": "दिशा ज्ञान परीक्षण", "title_en": "Direction Sense Test", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "logical_venn_diagrams", "title_hi": "तार्किक वेन आरेख", "title_en": "Logical Venn Diagrams", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "ranking_seating_arrangement", "title_hi": "रैंकिंग एवं बैठक व्यवस्था", "title_en": "Ranking and Seating Arrangement", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "shapes_subdivisions", "title_hi": "आकार और उनके उपविभाजन", "title_en": "Shapes and their Subdivisions", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        },
+        {
+          "id": "basic_numerical_efficiency",
+          "title_hi": "आधारभूत संख्यात्मक दक्षता",
+          "title_en": "Basic Numerical Efficiency",
+          "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0,
+          "children": [
+            { "id": "ratio_proportion_partnership_profit_loss", "title_hi": "अनुपात–समानुपात तथा साझा, लाभ एवं हानि", "title_en": "Ratio-Proportion and Partnership, Profit and Loss", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "percentage", "title_hi": "प्रतिशत", "title_en": "Percentage", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "simple_compound_interest", "title_hi": "साधारण एवं चक्रवृद्धि ब्याज", "title_en": "Simple and Compound Interest", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "mensuration_plane_figures", "title_hi": "समतलीय चित्रों के परिमाप एवं क्षेत्र", "title_en": "Mensuration of Plane Figures (Perimeter and Area)", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "data_analysis", "title_hi": "आंकडों का विश्लेषण (सारणी, दण्ड–आरेख, रेखीय आलेख, पाई–चार्ट)", "title_en": "Data Analysis (Tables, Bar Diagrams, Line Graphs, Pie Charts)", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "mean_median_mode", "title_hi": "माध्य (समांतर, गुणोत्तर एवं हरात्मक), माध्यिका एवं बहुलक", "title_en": "Mean (Arithmetic, Geometric and Harmonic), Median and Mode", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "permutation_combination", "title_hi": "क्रमचय एवं संचय", "title_en": "Permutation and Combination", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] },
+            { "id": "probability_simple_problems", "title_hi": "प्रायिकता (सरल समस्याएं)", "title_en": "Probability (Simple Problems)", "completed": false, "revision": false, "bookmarked": false, "notes": "", "children": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "current_affairs_rajasthan_context",
+      "title_hi": "समसामयिक घटनाएँ एवं मुद्दे (राजस्थान के विशेष संदर्भ में)",
+      "title_en": "Current Events and Issues (with special reference to Rajasthan)",
+      "completed": false,
+      "progress": 0,
+      "topics": [
+        { "id": "important_personalities_places_contemporary_issues", "title_hi": "महत्वपूर्ण व्यक्तित्व, स्थान और प्रासंगिक समकालीन मुद्दे", "title_en": "Important Personalities, Places and Relevant Contemporary Issues", "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0, "children": [] },
+        { "id": "welfare_development_new_schemes_programs_initiatives", "title_hi": "कल्याण और विकास से संबंधित नई योजनाएँ, कार्यक्रम और पहल", "title_en": "New Schemes, Programs and Initiatives related to Welfare and Development", "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0, "children": [] },
+        { "id": "major_economic_political_events", "title_hi": "प्रमुख आर्थिक और राजनीतिक घटनाक्रम", "title_en": "Major Economic and Political Developments", "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0, "children": [] },
+        { "id": "sports_achievements", "title_hi": "खेल और क्रीड़ा से संबंधित महत्वपूर्ण घटनाएँ एवं उपलब्धियाँ", "title_en": "Important Events and Achievements related to Sports", "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0, "children": [] },
+        { "id": "awards_publications_eminent_authors", "title_hi": "प्रमुख पुरस्कार, प्रकाशन और प्रतिष्ठित लेखक", "title_en": "Major Awards, Publications and Eminent Authors", "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0, "children": [] },
+        { "id": "rajasthan_public_examination_act_2022", "title_hi": "राजस्थान सार्वजनिक परीक्षा (भर्ती में अनुचित साधनों की रोकथाम के अध्युपाय) अधिनियम, 2022", "title_en": "Rajasthan Public Examination (Measures for Prevention of Unfair Means in Recruitment) Act, 2022", "completed": false, "revision": false, "bookmarked": false, "notes": "", "progress": 0, "children": [] }
+      ]
+    }
+  ]
+}
