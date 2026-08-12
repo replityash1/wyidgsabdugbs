@@ -1,1 +1,19 @@
-
+{
+  "exam": "RAS Pre 2026",
+  "language": "Hindi",
+  "secondary_language": "English",
+  "book_title": "RAS Pre 2026 — Complete Syllabus Knowledge Book",
+  "research_mode": "official_first",
+  "minimum_sources_per_topic": 4,
+  "maximum_sources_per_topic": 10,
+  "searches_per_topic": 5,
+  "minimum_high_confidence_sources": 2,
+  "include_images": true,
+  "include_tables": true,
+  "include_timelines": true,
+  "include_maps": true,
+  "include_glossary": true,
+  "include_ras_exam_orientation": true,
+  "gemini_model": "gemini-3.6-flash",
+  "research_model": "gemini-3.6-flash"
+}
