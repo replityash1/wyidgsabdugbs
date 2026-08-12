@@ -1,4 +1,3 @@
-```yaml
 name: Build RAS Knowledge Book
 
 on:
@@ -876,4 +875,3 @@ jobs:
             work/results/
           retention-days: 30
           compression-level: 6
-```
