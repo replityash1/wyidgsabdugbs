@@ -26,11 +26,11 @@ permissions:
   contents: read
 
 
-# ================================================================
-# PREPARE
-# ================================================================
-
 jobs:
+
+  # ================================================================
+  # PREPARE
+  # ================================================================
 
   prepare:
 
@@ -49,6 +49,10 @@ jobs:
         with:
           python-version: "3.12"
 
+      # ------------------------------------------------------------
+      # FLATTEN SYLLABUS
+      # ------------------------------------------------------------
+
       - name: Flatten syllabus
         run: |
           set -euo pipefail
@@ -56,14 +60,14 @@ jobs:
           python scripts/flatten_syllabus.py
 
           echo
-          echo "Total syllabus topics:"
+          echo "Total topics:"
           jq 'length' work/topics.json
 
       # ------------------------------------------------------------
-      # APPLY FILTER + BUILD BATCHES
+      # BUILD MATRIX
       # ------------------------------------------------------------
 
-      - name: Build batches
+      - name: Build matrix
         id: make_matrix
         env:
           SUBJECT_FILTER: ${{ inputs.subject_filter }}
@@ -92,13 +96,12 @@ jobs:
               topics = [
                   topic
                   for topic in topics
-                  if topic["subject_id"]
-                  == subject_filter
+                  if topic["subject_id"] == subject_filter
               ]
 
           if not topics:
               raise SystemExit(
-                  "No topics matched the selected subject_filter."
+                  "ERROR: No topics matched the selected subject."
               )
 
           try:
@@ -110,12 +113,12 @@ jobs:
               )
           except ValueError:
               raise SystemExit(
-                  "topics_per_runner must be an integer."
+                  "ERROR: topics_per_runner must be an integer."
               )
 
           if topics_per_runner < 1:
               raise SystemExit(
-                  "topics_per_runner must be >= 1."
+                  "ERROR: topics_per_runner must be >= 1."
               )
 
           batches = []
@@ -125,15 +128,14 @@ jobs:
               len(topics),
               topics_per_runner
           ):
+
               group = topics[
                   start:start + topics_per_runner
               ]
 
               batches.append(
                   {
-                      "batch_id": (
-                          start // topics_per_runner
-                      ),
+                      "batch_id": start // topics_per_runner,
                       "topic_ids": [
                           topic["topic_id"]
                           for topic in group
@@ -141,7 +143,20 @@ jobs:
                   }
               )
 
-          Path("work/batches.json").write_text(
+          Path(
+              "work/selected_topics.json"
+          ).write_text(
+              json.dumps(
+                  topics,
+                  ensure_ascii=False,
+                  indent=2
+              ),
+              encoding="utf-8"
+          )
+
+          Path(
+              "work/batches.json"
+          ).write_text(
               json.dumps(
                   batches,
                   ensure_ascii=False,
@@ -153,124 +168,77 @@ jobs:
           matrix = {
               "include": [
                   {
-                      "batch_id":
-                          batch["batch_id"]
+                      "batch_id": batch["batch_id"]
                   }
                   for batch in batches
               ]
           }
 
-          # IMPORTANT:
-          # The matrix MUST be a single-line JSON value.
-          compact_matrix = json.dumps(
+          matrix_json = json.dumps(
               matrix,
               ensure_ascii=False,
               separators=(",", ":")
           )
 
-          Path("work/matrix.json").write_text(
-              compact_matrix,
+          # This is the IMPORTANT line.
+          # It writes the job output for this step.
+          with open(
+              os.environ["GITHUB_OUTPUT"],
+              "a",
               encoding="utf-8"
-          )
+          ) as output:
 
-          # Also save the filtered topic list so every runner
-          # uses exactly the same topic selection.
-          Path("work/selected_topics.json").write_text(
-              json.dumps(
-                  topics,
-                  ensure_ascii=False,
-                  indent=2
-              ),
-              encoding="utf-8"
-          )
+              output.write(
+                  "matrix="
+                  + matrix_json
+                  + "\n"
+              )
 
           print()
           print("==========================================")
-          print("RAS BOOK PLAN")
+          print("MATRIX CREATED")
           print("==========================================")
           print(
-              f"Subject filter: "
-              f"{subject_filter or '[ALL SUBJECTS]'}"
+              "Subject:",
+              subject_filter or "[ALL]"
           )
           print(
-              f"Topics selected: {len(topics)}"
+              "Topics:",
+              len(topics)
           )
           print(
-              f"Topics per runner: "
-              f"{topics_per_runner}"
+              "Topics per runner:",
+              topics_per_runner
           )
           print(
-              f"Number of batches: "
-              f"{len(batches)}"
+              "Batches:",
+              len(batches)
           )
           print()
           print("Matrix:")
-          print(compact_matrix)
-
+          print(matrix_json)
           print()
           print("Batches:")
+
           for batch in batches:
               print(
-                  f"  Batch {batch['batch_id']}: "
-                  f"{len(batch['topic_ids'])} topics"
+                  "  Batch",
+                  batch["batch_id"],
+                  "->",
+                  len(batch["topic_ids"]),
+                  "topics"
               )
 
-          # Write EXACTLY one line to GITHUB_OUTPUT.
-          github_output = os.environ["GITHUB_OUTPUT"]
+          # Validate JSON before leaving the step.
+          json.loads(matrix_json)
 
-          with open(
-              github_output,
-              "a",
-              encoding="utf-8"
-          ) as f:
-              f.write(
-                  "matrix="
-                  + compact_matrix
-                  + "\n"
-              )
+          print()
+          print("Matrix JSON validation: PASS")
           PY
 
-          echo
-          echo "Checking generated matrix:"
-          cat work/matrix.json
-
-          echo
-          echo "Validating matrix JSON:"
-          jq empty work/matrix.json
-
-          echo
-          echo "Matrix size:"
-          wc -c < work/matrix.json
-
-          echo
-          echo "GitHub output:"
-          grep '^matrix=' "$GITHUB_OUTPUT"
-
       # ------------------------------------------------------------
-      # DEBUG OUTPUT
+      # UPLOAD PLAN FOR DEBUGGING
       # ------------------------------------------------------------
-
-      - name: Verify matrix output
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          if ! grep -q '^matrix=' "$GITHUB_OUTPUT"; then
-              echo "::error::matrix was not written to GITHUB_OUTPUT."
-              exit 1
-          fi
-
-          MATRIX_VALUE="$(
-              grep '^matrix=' "$GITHUB_OUTPUT" |
-              sed 's/^matrix=//'
-          )"
-
-          if [ -z "$MATRIX_VALUE" ]; then
-              echo "::error::matrix output is empty."
-              exit 1
-          fi
-
-          echo "Matrix output is present."
 
       - name: Upload planning files
         uses: actions/upload-artifact@v4
@@ -280,12 +248,11 @@ jobs:
             work/topics.json
             work/selected_topics.json
             work/batches.json
-            work/matrix.json
           retention-days: 3
 
 
   # ================================================================
-  # RESEARCH + WRITE
+  # RESEARCH + WRITING
   # ================================================================
 
   research_and_write:
@@ -293,6 +260,7 @@ jobs:
     needs: prepare
 
     strategy:
+
       fail-fast: false
 
       max-parallel: ${{ fromJSON(inputs.max_parallel) }}
@@ -304,6 +272,10 @@ jobs:
     timeout-minutes: 360
 
     steps:
+
+      # ------------------------------------------------------------
+      # CHECKOUT
+      # ------------------------------------------------------------
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -322,6 +294,7 @@ jobs:
       # ------------------------------------------------------------
 
       - name: Install Python dependencies
+        shell: bash
         run: |
           set -euo pipefail
 
@@ -338,6 +311,7 @@ jobs:
       # ------------------------------------------------------------
 
       - name: Install system dependencies
+        shell: bash
         run: |
           set -euo pipefail
 
@@ -354,10 +328,10 @@ jobs:
             fonts-noto-extra
 
       # ------------------------------------------------------------
-      # RESTORE THE EXACT SELECTED TOPICS
+      # RECREATE SAME TOPIC PLAN
       # ------------------------------------------------------------
 
-      - name: Create selected topic files
+      - name: Recreate topic plan
         env:
           SUBJECT_FILTER: ${{ inputs.subject_filter }}
           TOPICS_PER_RUNNER: ${{ inputs.topics_per_runner }}
@@ -372,7 +346,7 @@ jobs:
           import os
           from pathlib import Path
 
-          all_topics = json.loads(
+          topics = json.loads(
               Path("work/topics.json").read_text(
                   encoding="utf-8"
               )
@@ -384,27 +358,18 @@ jobs:
           ).strip()
 
           if subject_filter:
-              selected = [
+              topics = [
                   topic
-                  for topic in all_topics
-                  if topic["subject_id"]
-                  == subject_filter
+                  for topic in topics
+                  if topic["subject_id"] == subject_filter
               ]
-          else:
-              selected = all_topics
 
-          Path(
-              "work/selected_topics.json"
-          ).write_text(
-              json.dumps(
-                  selected,
-                  ensure_ascii=False,
-                  indent=2
-              ),
-              encoding="utf-8"
-          )
+          if not topics:
+              raise SystemExit(
+                  "No matching topics."
+              )
 
-          per_runner = int(
+          topics_per_runner = int(
               os.environ.get(
                   "TOPICS_PER_RUNNER",
                   "2"
@@ -415,23 +380,34 @@ jobs:
 
           for start in range(
               0,
-              len(selected),
-              per_runner
+              len(topics),
+              topics_per_runner
           ):
-              group = selected[
-                  start:start + per_runner
+
+              group = topics[
+                  start:start + topics_per_runner
               ]
 
               batches.append(
                   {
-                      "batch_id":
-                          start // per_runner,
+                      "batch_id": start // topics_per_runner,
                       "topic_ids": [
                           topic["topic_id"]
                           for topic in group
                       ]
                   }
               )
+
+          Path(
+              "work/selected_topics.json"
+          ).write_text(
+              json.dumps(
+                  topics,
+                  ensure_ascii=False,
+                  indent=2
+              ),
+              encoding="utf-8"
+          )
 
           Path(
               "work/batches.json"
@@ -445,26 +421,27 @@ jobs:
           )
           PY
 
+          echo
           echo "Selected topics:"
           jq length work/selected_topics.json
 
           echo
-          echo "Current batch:"
+          echo "This runner:"
           jq \
-            --argjson id '${{ matrix.batch_id }}' \
-            '.[] | select(.batch_id == $id)' \
+            --argjson ID '${{ matrix.batch_id }}' \
+            '.[] | select(.batch_id == $ID)' \
             work/batches.json
 
-      # ------------------------------------------------------------
-      # BUILD LLAMA.CPP
-      # ------------------------------------------------------------
+      # ==========================================================
+      # LLAMA.CPP
+      # ==========================================================
 
       - name: Cache llama.cpp
         id: llama_cache
         uses: actions/cache@v4
         with:
           path: llama.cpp
-          key: llama-cpp-ubuntu-24.04-qwen3-v1
+          key: llama-cpp-ubuntu-24-qwen3-v1
 
       - name: Build llama.cpp
         if: steps.llama_cache.outputs.cache-hit != 'true'
@@ -487,7 +464,7 @@ jobs:
             --target llama-server \
             -j2
 
-      - name: Check llama-server
+      - name: Verify llama server
         shell: bash
         run: |
           set -euo pipefail
@@ -495,11 +472,11 @@ jobs:
           test -x \
             llama.cpp/build/bin/llama-server
 
-          echo "llama-server found."
+          echo "llama-server OK."
 
-      # ------------------------------------------------------------
-      # DOWNLOAD / CACHE MODEL
-      # ------------------------------------------------------------
+      # ==========================================================
+      # MODEL
+      # ==========================================================
 
       - name: Cache Qwen3-14B
         id: model_cache
@@ -516,16 +493,12 @@ jobs:
 
           mkdir -p models
 
-          echo "Downloading Qwen3-14B Q4_K_M..."
-
           wget \
             -c \
             --progress=dot:giga \
             "https://huggingface.co/Qwen/Qwen3-14B-GGUF/resolve/main/Qwen3-14B-Q4_K_M.gguf?download=true" \
             -O models/Qwen3-14B-Q4_K_M.gguf
 
-          echo
-          echo "Model:"
           ls -lh models/
 
       - name: Verify model
@@ -536,27 +509,24 @@ jobs:
           MODEL="models/Qwen3-14B-Q4_K_M.gguf"
 
           if [ ! -f "$MODEL" ]; then
-              echo "::error::Model file missing."
+              echo "::error::Model missing."
               exit 1
           fi
 
-          SIZE=$(stat -c%s "$MODEL")
+          SIZE="$(stat -c%s "$MODEL")"
 
-          echo "Model size:"
-          echo "$SIZE bytes"
+          echo "Model size: $SIZE bytes"
 
-          # The model should be several GB.
-          # This catches partial/HTML downloads.
           if [ "$SIZE" -lt 5000000000 ]; then
-              echo "::error::Model appears too small."
+              echo "::error::Model file is suspiciously small."
               exit 1
           fi
 
-      # ------------------------------------------------------------
-      # START LOCAL MODEL
-      # ------------------------------------------------------------
+      # ==========================================================
+      # LOCAL QWEN SERVER
+      # ==========================================================
 
-      - name: Start Qwen server
+      - name: Start local Qwen server
         shell: bash
         run: |
           set -euo pipefail
@@ -575,7 +545,7 @@ jobs:
 
           echo $! > llama.pid
 
-          echo "Waiting for local Qwen server..."
+          echo "Waiting for Qwen..."
 
           READY=0
 
@@ -587,8 +557,9 @@ jobs:
                 >/dev/null; then
 
                   READY=1
-                  echo "Qwen server is ready."
+                  echo "Qwen is ready."
                   break
+
               fi
 
               sleep 2
@@ -596,18 +567,21 @@ jobs:
           done
 
           if [ "$READY" -ne 1 ]; then
-              echo "::error::Qwen server failed to become ready."
+
+              echo "::error::Qwen failed to start."
 
               echo
-              echo "========== LLAMA LOG =========="
+              echo "========== llama.log =========="
+
               cat logs/llama.log
 
               exit 1
+
           fi
 
-      # ------------------------------------------------------------
-      # RUN CURRENT BATCH
-      # ------------------------------------------------------------
+      # ==========================================================
+      # RESEARCH
+      # ==========================================================
 
       - name: Run research batch
         shell: bash
@@ -617,31 +591,25 @@ jobs:
           python scripts/run_batch.py \
             "${{ matrix.batch_id }}"
 
-      # ------------------------------------------------------------
-      # UPLOAD BATCH
-      # ------------------------------------------------------------
+      # ==========================================================
+      # UPLOAD RESULTS
+      # ==========================================================
 
-      - name: Upload batch result
+      - name: Upload batch results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: batch-${{ matrix.batch_id }}
-          path: |
-            work/results/
+          path: work/results/
           retention-days: 7
           compression-level: 6
 
-      # ------------------------------------------------------------
-      # UPLOAD MODEL LOG
-      # ------------------------------------------------------------
-
-      - name: Upload model log
+      - name: Upload llama log
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: llama-log-${{ matrix.batch_id }}
-          path: |
-            logs/llama.log
+          path: logs/llama.log
           retention-days: 3
 
 
@@ -682,11 +650,12 @@ jobs:
             python3-pip
 
           python -m pip install \
-            --upgrade pip \
+            --upgrade \
+            pip \
             weasyprint
 
       # ------------------------------------------------------------
-      # DOWNLOAD ALL BATCHES
+      # DOWNLOAD BATCH RESULTS
       # ------------------------------------------------------------
 
       - name: Download batch artifacts
@@ -697,7 +666,7 @@ jobs:
           merge-multiple: true
 
       # ------------------------------------------------------------
-      # RESTORE RESULTS
+      # RESTORE
       # ------------------------------------------------------------
 
       - name: Restore results
@@ -718,7 +687,10 @@ jobs:
             -print |
           while IFS= read -r FILE; do
 
-              TOPIC_DIR="$(basename "$(dirname "$FILE")")"
+              TOPIC_DIR="$(
+                basename \
+                "$(dirname "$FILE")"
+              )"
 
               mkdir -p \
                 "work/results/$TOPIC_DIR"
@@ -729,9 +701,10 @@ jobs:
 
           done
 
-          echo "Restored result directories:"
+          echo
+          echo "Restored result files:"
+
           find work/results \
-            -maxdepth 2 \
             -type f \
             | sort
 
@@ -750,7 +723,7 @@ jobs:
       # PDF
       # ------------------------------------------------------------
 
-      - name: Convert HTML to PDF
+      - name: Create PDF
         shell: bash
         run: |
           set -euo pipefail
@@ -759,27 +732,27 @@ jobs:
           from pathlib import Path
           from weasyprint import HTML
 
-          html_file = Path(
+          source = Path(
               "output/RAS_Pre_2026_Book.html"
           )
 
-          pdf_file = Path(
+          target = Path(
               "output/RAS_Pre_2026_Book.pdf"
           )
 
-          if not html_file.exists():
+          if not source.exists():
               raise SystemExit(
                   "HTML book was not generated."
               )
 
           HTML(
-              filename=str(html_file)
+              filename=str(source)
           ).write_pdf(
-              str(pdf_file)
+              str(target)
           )
 
           print(
-              f"Created {pdf_file}"
+              f"Created {target}"
           )
           PY
 
@@ -814,27 +787,24 @@ jobs:
                           )
                       )
                   )
-              except Exception as exc:
-                  print(
-                      f"Could not read {file}: {exc}"
-                  )
+              except Exception:
+                  pass
 
           passed = sum(
               audit.get("status") == "PASS"
               for audit in audits
           )
 
-          revised = sum(
-              audit.get("status") != "PASS"
-              for audit in audits
-          )
+          needs_review = len(
+              audits
+          ) - passed
 
           lines = [
               "# RAS Book Audit Summary",
               "",
               f"Topics processed: {len(audits)}",
               f"Passed: {passed}",
-              f"Needs review: {revised}",
+              f"Needs review: {needs_review}",
               "",
               "## Topics needing review",
               ""
@@ -863,7 +833,7 @@ jobs:
           PY
 
       # ------------------------------------------------------------
-      # UPLOAD FINAL BOOK
+      # FINAL ARTIFACT
       # ------------------------------------------------------------
 
       - name: Upload final book
