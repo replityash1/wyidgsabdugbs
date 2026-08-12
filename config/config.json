@@ -1,0 +1,42 @@
+{
+  "exam": "RAS Pre 2026",
+  "language": "Hindi",
+
+  "model": {
+    "repo": "Qwen/Qwen3-14B-GGUF",
+    "file": "Qwen3-14B-Q4_K_M.gguf",
+    "context": 32768,
+    "threads": 4,
+    "gpu_layers": 0,
+    "batch_size": 256
+  },
+
+  "research": {
+    "search_queries_per_topic": 6,
+    "results_per_query": 8,
+    "max_sources_per_topic": 8,
+    "max_source_chars": 14000,
+
+    "preferred_source_tiers": [
+      1,
+      2
+    ],
+
+    "fallback_to_tier_3": true
+  },
+
+  "pipeline": {
+    "topics_per_runner": 2,
+    "max_parallel": 20
+  },
+
+  "book": {
+    "title": "RAS Pre 2026 — Complete Evidence-Based Knowledge Book",
+    "include_prelims": true,
+    "include_mains": true,
+    "include_timelines": true,
+    "include_tables": true,
+    "include_visuals": true,
+    "include_source_register": true
+  }
+}
