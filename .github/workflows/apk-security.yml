@@ -40,7 +40,6 @@ jobs:
             binutils \
             jq \
             ripgrep \
-            strings \
             findutils \
             python3 \
             python3-pip \
@@ -48,18 +47,38 @@ jobs:
             curl \
             default-jre
 
-      - name: Install Python tools
+          echo
+          echo "Checking installed tools..."
+          echo
+
+          unzip -v | head -1 || true
+          zipalign 2>&1 | head -2 || true
+          aapt version || true
+          apksigner version || true
+          file --version | head -1 || true
+          strings --version | head -1 || true
+          rg --version | head -1 || true
+          python3 --version
+          java -version 2>&1 | head -1
+
+      # ============================================================
+      # INSTALL PYTHON TOOLS
+      # ============================================================
+
+      - name: Install Python analysis tools
         shell: bash
         run: |
+          set -euo pipefail
+
           python3 -m pip install \
             --break-system-packages \
             androguard
 
       # ============================================================
-      # DOWNLOAD APK/XAPK
+      # CREATE WORKSPACE
       # ============================================================
 
-      - name: Download target package
+      - name: Prepare workspace
         shell: bash
         run: |
           set -euo pipefail
@@ -69,7 +88,21 @@ jobs:
             work/packages \
             work/apks \
             work/obb \
-            work/assets
+            work/assets \
+            work/extracted \
+            work/apktool \
+            report/apks \
+            report/metadata \
+            report/assets
+
+      # ============================================================
+      # DOWNLOAD TARGET
+      # ============================================================
+
+      - name: Download target package
+        shell: bash
+        run: |
+          set -euo pipefail
 
           if [ ! -f input/url.txt ]; then
             echo "::error::input/url.txt does not exist."
@@ -83,7 +116,7 @@ jobs:
             exit 1
           fi
 
-          echo "Downloading:"
+          echo "Download URL:"
           echo "$URL"
           echo
 
@@ -99,7 +132,9 @@ jobs:
             -o work/download/downloaded-file
 
           echo
-          echo "Downloaded file:"
+          echo "Download complete."
+          echo
+
           ls -lh work/download/downloaded-file
 
           echo
@@ -107,11 +142,11 @@ jobs:
           file work/download/downloaded-file
 
           echo
-          echo "HTTP/download metadata:"
-          stat work/download/downloaded-file
+          echo "File size:"
+          stat -c '%s bytes' work/download/downloaded-file
 
       # ============================================================
-      # IDENTIFY WHAT WE ACTUALLY DOWNLOADED
+      # IDENTIFY DOWNLOADED OBJECT
       # ============================================================
 
       - name: Identify downloaded package
@@ -121,30 +156,39 @@ jobs:
 
           FILE="work/download/downloaded-file"
 
-          echo "Magic bytes:"
+          echo "=========================================="
+          echo "DOWNLOADED OBJECT"
+          echo "=========================================="
+
+          file "$FILE"
+
+          echo
+          echo "First 32 bytes:"
           xxd -l 32 "$FILE" || true
 
           echo
-          echo "File:"
-          file "$FILE"
+          echo "Testing ZIP structure..."
 
-          # ZIP/APK/XAPK files begin with PK.
-          if file "$FILE" | grep -qi 'Zip archive'; then
+          if unzip -t "$FILE" >/dev/null 2>&1; then
 
-            echo "ZIP-compatible package detected."
+            echo "ZIP-compatible file detected."
 
-            # First try to identify APK contents.
+            echo
+            echo "Checking for AndroidManifest.xml..."
+
             if unzip -l "$FILE" 2>/dev/null |
-                grep -qi 'AndroidManifest.xml'; then
+                grep -q 'AndroidManifest.xml'; then
 
-              echo "Downloaded file appears to be an APK."
+              echo "Direct APK detected."
 
-              cp "$FILE" \
+              cp \
+                "$FILE" \
                 work/apks/downloaded.apk
 
             else
 
-              echo "Downloaded file is a ZIP/XAPK-like container."
+              echo "Container package detected."
+              echo "Attempting XAPK/ZIP extraction."
 
               mkdir -p work/packages/downloaded
 
@@ -156,15 +200,19 @@ jobs:
 
           else
 
-            echo "::error::Downloaded object is not a ZIP/APK/XAPK."
             echo
-            echo "The URL may have returned an HTML page or another"
-            echo "download mechanism instead of the actual package."
+            echo "::error::Downloaded object is not a ZIP/APK/XAPK."
 
             echo
-            echo "First bytes:"
-            head -c 500 "$FILE" |
-              strings ||
+            echo "The download URL probably returned HTML or another"
+            echo "intermediate download page."
+
+            echo
+            echo "First printable content:"
+
+            head -c 2000 "$FILE" |
+              strings -n 4 |
+              head -100 ||
               true
 
             exit 1
@@ -172,36 +220,29 @@ jobs:
           fi
 
       # ============================================================
-      # DISCOVER APKs INSIDE THE DOWNLOADED PACKAGE
+      # DISCOVER APK FILES
       # ============================================================
 
-      - name: Discover APKs and assets
+      - name: Discover APKs
         shell: bash
         run: |
           set -euo pipefail
 
-          # APK directly downloaded
+          # APK downloaded directly
           find work/apks \
             -type f \
             -iname "*.apk" \
             -print
 
-          # APKs contained in XAPK
+          # APKs contained inside XAPK
           find work/packages \
             -type f \
             -iname "*.apk" \
             -exec cp {} work/apks/ \;
 
-          # OBB
-          find work/packages \
-            -type f \
-            -iname "*.obb" \
-            -exec cp {} work/obb/ \; \
-            || true
-
           echo
           echo "=========================================="
-          echo "DISCOVERED APKs"
+          echo "DISCOVERED APK FILES"
           echo "=========================================="
 
           find work/apks \
@@ -221,9 +262,43 @@ jobs:
           echo "APK count: $APK_COUNT"
 
           if [ "$APK_COUNT" -eq 0 ]; then
-            echo "::error::No APK found."
+            echo "::error::No APK files were found."
             exit 1
           fi
+
+      # ============================================================
+      # DISCOVER OBB / OTHER XAPK CONTENT
+      # ============================================================
+
+      - name: Discover additional package contents
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          find work/packages \
+            -type f \
+            -iname "*.obb" \
+            -exec cp {} work/obb/ \; \
+            || true
+
+          find work/packages \
+            -type f \
+            ! -iname "*.apk" \
+            ! -iname "*.obb" \
+            -print \
+            > work/additional-files.txt \
+            || true
+
+          echo "OBB files:"
+          find work/obb \
+            -type f \
+            -print \
+            || true
+
+          echo
+          echo "Additional files:"
+          cat work/additional-files.txt \
+            || true
 
       # ============================================================
       # INSTALL APKTOOL
@@ -256,24 +331,11 @@ jobs:
           sudo chmod +x \
             /usr/local/bin/apktool
 
+          echo "Apktool:"
           apktool --version
 
       # ============================================================
-      # CREATE REPORT DIRECTORIES
-      # ============================================================
-
-      - name: Prepare report
-        shell: bash
-        run: |
-          mkdir -p \
-            report/apks \
-            report/metadata \
-            report/assets \
-            work/extracted \
-            work/apktool
-
-      # ============================================================
-      # INVENTORY
+      # CREATE APK LIST
       # ============================================================
 
       - name: Create APK inventory
@@ -284,6 +346,7 @@ jobs:
           find work/apks \
             -type f \
             -iname "*.apk" \
+            -print \
             | sort \
             > work/apk-list.txt
 
@@ -291,7 +354,7 @@ jobs:
           cat work/apk-list.txt
 
       # ============================================================
-      # ANALYZE EVERY APK
+      # STATIC ANALYSIS
       # ============================================================
 
       - name: Static APK analysis
@@ -323,21 +386,28 @@ jobs:
 
             echo
             echo "================================================"
-            echo "ANALYZING: $BASENAME"
+            echo "ANALYZING APK #$INDEX"
+            echo "$BASENAME"
             echo "================================================"
 
             # --------------------------------------------------------
             # HASHES
             # --------------------------------------------------------
 
-            sha256sum "$APK" > "$OUT/sha256.txt"
-            sha1sum "$APK" > "$OUT/sha1.txt"
-            md5sum "$APK" > "$OUT/md5.txt"
+            sha256sum "$APK" \
+              > "$OUT/sha256.txt"
 
-            file "$APK" > "$OUT/file-type.txt"
+            sha1sum "$APK" \
+              > "$OUT/sha1.txt"
+
+            md5sum "$APK" \
+              > "$OUT/md5.txt"
+
+            file "$APK" \
+              > "$OUT/file-type.txt"
 
             # --------------------------------------------------------
-            # APK STRUCTURE
+            # ZIP STRUCTURE
             # --------------------------------------------------------
 
             unzip -l "$APK" \
@@ -345,7 +415,7 @@ jobs:
               2>&1 || true
 
             # --------------------------------------------------------
-            # ANDROID MANIFEST
+            # ANDROID PACKAGE INFORMATION
             # --------------------------------------------------------
 
             aapt dump badging "$APK" \
@@ -374,13 +444,14 @@ jobs:
               2>&1 || true
 
             # --------------------------------------------------------
-            # EXTRACT
+            # EXTRACT APK
             # --------------------------------------------------------
 
             unzip -q \
               "$APK" \
               -d "$EXTRACT" \
-              2>/dev/null || true
+              2>/dev/null \
+              || true
 
             find "$EXTRACT" \
               -type f \
@@ -388,7 +459,7 @@ jobs:
               > "$OUT/file-list.txt"
 
             # --------------------------------------------------------
-            # SPLIT DETECTION
+            # SPLIT / CONFIG ANALYSIS
             # --------------------------------------------------------
 
             {
@@ -408,6 +479,7 @@ jobs:
 
               echo
               echo "Package information:"
+
               grep -Ei \
                 'package:|versionCode|versionName|application-label' \
                 "$OUT/badging.txt" \
@@ -434,10 +506,23 @@ jobs:
                 -print |
                 sort
 
+              echo
+              echo "Resource APK/config indicators:"
+
+              find "$EXTRACT" \
+                -type f \
+                \( \
+                  -name "resources.arsc" \
+                  -o -name "*.config" \
+                  -o -name "*.xml" \
+                \) \
+                -print |
+                head -1000
+
             } > "$OUT/split-analysis.txt"
 
             # --------------------------------------------------------
-            # APKTOOL
+            # APKTOOL DECOMPILATION
             # --------------------------------------------------------
 
             apktool d \
@@ -448,7 +533,7 @@ jobs:
               2>&1 || true
 
             # --------------------------------------------------------
-            # ALL STRINGS
+            # COLLECT STRINGS
             # --------------------------------------------------------
 
             {
@@ -475,7 +560,7 @@ jobs:
             > "$OUT/all-strings.txt"
 
             # --------------------------------------------------------
-            # URLS
+            # URL DETECTION
             # --------------------------------------------------------
 
             rg -o \
@@ -487,7 +572,7 @@ jobs:
               || true
 
             # --------------------------------------------------------
-            # DOMAINS
+            # DOMAIN DETECTION
             # --------------------------------------------------------
 
             rg -o \
@@ -499,7 +584,7 @@ jobs:
               || true
 
             # --------------------------------------------------------
-            # POTENTIAL SECRETS
+            # POTENTIAL SECRET INDICATORS
             # --------------------------------------------------------
 
             rg -n -i \
@@ -509,7 +594,7 @@ jobs:
               || true
 
             # --------------------------------------------------------
-            # CRYPTO
+            # CRYPTO INDICATORS
             # --------------------------------------------------------
 
             rg -n -i \
@@ -519,7 +604,7 @@ jobs:
               || true
 
             # --------------------------------------------------------
-            # NETWORKING
+            # NETWORK INDICATORS
             # --------------------------------------------------------
 
             rg -n -i \
@@ -529,7 +614,7 @@ jobs:
               || true
 
             # --------------------------------------------------------
-            # ANDROID SECURITY
+            # ANDROID SECURITY INDICATORS
             # --------------------------------------------------------
 
             rg -n -i \
@@ -547,7 +632,7 @@ jobs:
               echo "=============================="
               echo
 
-              echo "UNITY"
+              echo "UNITY FILES"
 
               find "$EXTRACT" \
                 -type f \
@@ -559,7 +644,7 @@ jobs:
                 -print
 
               echo
-              echo "UNREAL"
+              echo "UNREAL FILES"
 
               find "$EXTRACT" \
                 -type f \
@@ -591,7 +676,7 @@ jobs:
             } > "$OUT/engine-fingerprint.txt"
 
             # --------------------------------------------------------
-            # NATIVE LIBRARY ANALYSIS
+            # NATIVE LIBRARY INVENTORY
             # --------------------------------------------------------
 
             find "$EXTRACT" \
@@ -599,6 +684,10 @@ jobs:
               -name "*.so" \
               -print \
               > "$OUT/native-libraries.txt"
+
+            # --------------------------------------------------------
+            # NATIVE LIBRARY ANALYSIS
+            # --------------------------------------------------------
 
             while IFS= read -r SO; do
 
@@ -617,6 +706,7 @@ jobs:
 
                 echo
                 echo "ELF HEADER"
+
                 readelf -h "$SO" \
                   2>/dev/null ||
                   true
@@ -651,7 +741,7 @@ jobs:
             done < "$OUT/native-libraries.txt"
 
             # --------------------------------------------------------
-            # OBFUSCATION / PACKING
+            # OBFUSCATION / PACKING INDICATORS
             # --------------------------------------------------------
 
             rg -n -i \
@@ -709,7 +799,7 @@ jobs:
               cat "$OUT/engine-fingerprint.txt"
               echo
 
-              echo "## Potential Secrets"
+              echo "## Potential Secret Indicators"
               cat "$OUT/potential-secrets.txt"
               echo
 
@@ -721,19 +811,19 @@ jobs:
               cat "$OUT/domains.txt"
               echo
 
-              echo "## Crypto"
+              echo "## Crypto Indicators"
               cat "$OUT/crypto-indicators.txt"
               echo
 
-              echo "## Network"
+              echo "## Network Indicators"
               cat "$OUT/network-indicators.txt"
               echo
 
-              echo "## Android Security"
+              echo "## Android Security Indicators"
               cat "$OUT/android-security-indicators.txt"
               echo
 
-              echo "## Obfuscation"
+              echo "## Obfuscation / Packing Indicators"
               cat "$OUT/obfuscation.txt"
               echo
 
@@ -745,7 +835,7 @@ jobs:
           done < work/apk-list.txt
 
       # ============================================================
-      # GLOBAL REPORT
+      # FINAL REPORT
       # ============================================================
 
       - name: Build final report
@@ -759,7 +849,7 @@ jobs:
             echo "Generated: $(date -u)"
             echo
 
-            echo "## Downloaded package"
+            echo "## Downloaded Package"
             file work/download/downloaded-file
             du -h work/download/downloaded-file
             echo
@@ -768,7 +858,7 @@ jobs:
             cat work/apk-list.txt
             echo
 
-            echo "## Individual reports"
+            echo "## Individual Reports"
 
             find report/apks \
               -name "security-report.md" \
@@ -788,10 +878,10 @@ jobs:
           } > report/FINAL-REPORT.md
 
       # ============================================================
-      # UPLOAD
+      # UPLOAD RESULTS
       # ============================================================
 
-      - name: Upload analysis
+      - name: Upload analysis results
         uses: actions/upload-artifact@v4
         with:
           name: imvu-apk-security-analysis
@@ -802,7 +892,7 @@ jobs:
           compression-level: 6
 
       # ============================================================
-      # SUMMARY
+      # FINAL SUMMARY
       # ============================================================
 
       - name: Final summary
@@ -813,16 +903,21 @@ jobs:
           echo "       APK SECURITY ANALYSIS COMPLETE"
           echo "=============================================="
           echo
-          echo "Downloaded:"
+
+          echo "Downloaded package:"
           file work/download/downloaded-file
+
           echo
           echo "Discovered APKs:"
           cat work/apk-list.txt
+
           echo
-          echo "Results are available in:"
+          echo "Results:"
           echo "  imvu-apk-security-analysis"
+
           echo
           echo "Main report:"
           echo "  report/FINAL-REPORT.md"
+
           echo
           echo "=============================================="
