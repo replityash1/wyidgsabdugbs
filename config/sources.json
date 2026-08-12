@@ -1,1 +1,47 @@
-
+{
+  "tier_1_official": [
+    "rpsc.rajasthan.gov.in",
+    "rajasthan.gov.in",
+    "jkk.artandculture.rajasthan.gov.in",
+    "museumsrajasthan.rajasthan.gov.in",
+    "tourism.rajasthan.gov.in",
+    "foundation.rajasthan.gov.in",
+    "assembly.rajasthan.gov.in",
+    "rajassembly.nic.in",
+    "rajbhawan.rajasthan.gov.in",
+    "rajasthanhighcourt.nic.in",
+    "raj.nic.in",
+    "sso.rajasthan.gov.in",
+    "finance.rajasthan.gov.in",
+    "education.rajasthan.gov.in",
+    "planning.rajasthan.gov.in",
+    "des.rajasthan.gov.in",
+    "agriculture.rajasthan.gov.in",
+    "forest.rajasthan.gov.in",
+    "water.rajasthan.gov.in",
+    "indiaculture.gov.in",
+    "asi.nic.in",
+    "archives.gov.in",
+    "nationalarchives.nic.in",
+    "indiacode.nic.in",
+    "pib.gov.in",
+    "ncert.nic.in",
+    "education.gov.in",
+    "mospi.gov.in",
+    "rbi.org.in",
+    "niti.gov.in",
+    "upsc.gov.in"
+  ],
+  "tier_2_academic": [
+    "ignca.gov.in",
+    "iias.ac.in",
+    "sahitya-akademi.gov.in",
+    "jnu.ac.in",
+    "du.ac.in",
+    "uniraj.ac.in",
+    "moe.gov.in"
+  ],
+  "media_fallback": [
+    "wikipedia.org"
+  ]
+}
