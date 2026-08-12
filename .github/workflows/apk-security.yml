@@ -1,0 +1,828 @@
+name: APK/XAPK Security Lab
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+
+    steps:
+
+      # ============================================================
+      # CHECKOUT
+      # ============================================================
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ============================================================
+      # INSTALL TOOLS
+      # ============================================================
+
+      - name: Install analysis tools
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          sudo apt-get update
+
+          sudo apt-get install -y \
+            unzip \
+            zipalign \
+            aapt \
+            apksigner \
+            file \
+            binutils \
+            jq \
+            ripgrep \
+            strings \
+            findutils \
+            python3 \
+            python3-pip \
+            wget \
+            curl \
+            default-jre
+
+      - name: Install Python tools
+        shell: bash
+        run: |
+          python3 -m pip install \
+            --break-system-packages \
+            androguard
+
+      # ============================================================
+      # DOWNLOAD APK/XAPK
+      # ============================================================
+
+      - name: Download target package
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          mkdir -p \
+            work/download \
+            work/packages \
+            work/apks \
+            work/obb \
+            work/assets
+
+          if [ ! -f input/url.txt ]; then
+            echo "::error::input/url.txt does not exist."
+            exit 1
+          fi
+
+          URL="$(head -n 1 input/url.txt | tr -d '\r')"
+
+          if [ -z "$URL" ]; then
+            echo "::error::input/url.txt is empty."
+            exit 1
+          fi
+
+          echo "Downloading:"
+          echo "$URL"
+          echo
+
+          curl \
+            -L \
+            --fail \
+            --retry 5 \
+            --retry-delay 3 \
+            --connect-timeout 30 \
+            --max-time 1800 \
+            -A "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/151 Safari/537.36" \
+            "$URL" \
+            -o work/download/downloaded-file
+
+          echo
+          echo "Downloaded file:"
+          ls -lh work/download/downloaded-file
+
+          echo
+          echo "File type:"
+          file work/download/downloaded-file
+
+          echo
+          echo "HTTP/download metadata:"
+          stat work/download/downloaded-file
+
+      # ============================================================
+      # IDENTIFY WHAT WE ACTUALLY DOWNLOADED
+      # ============================================================
+
+      - name: Identify downloaded package
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          FILE="work/download/downloaded-file"
+
+          echo "Magic bytes:"
+          xxd -l 32 "$FILE" || true
+
+          echo
+          echo "File:"
+          file "$FILE"
+
+          # ZIP/APK/XAPK files begin with PK.
+          if file "$FILE" | grep -qi 'Zip archive'; then
+
+            echo "ZIP-compatible package detected."
+
+            # First try to identify APK contents.
+            if unzip -l "$FILE" 2>/dev/null |
+                grep -qi 'AndroidManifest.xml'; then
+
+              echo "Downloaded file appears to be an APK."
+
+              cp "$FILE" \
+                work/apks/downloaded.apk
+
+            else
+
+              echo "Downloaded file is a ZIP/XAPK-like container."
+
+              mkdir -p work/packages/downloaded
+
+              unzip -o \
+                "$FILE" \
+                -d work/packages/downloaded
+
+            fi
+
+          else
+
+            echo "::error::Downloaded object is not a ZIP/APK/XAPK."
+            echo
+            echo "The URL may have returned an HTML page or another"
+            echo "download mechanism instead of the actual package."
+
+            echo
+            echo "First bytes:"
+            head -c 500 "$FILE" |
+              strings ||
+              true
+
+            exit 1
+
+          fi
+
+      # ============================================================
+      # DISCOVER APKs INSIDE THE DOWNLOADED PACKAGE
+      # ============================================================
+
+      - name: Discover APKs and assets
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # APK directly downloaded
+          find work/apks \
+            -type f \
+            -iname "*.apk" \
+            -print
+
+          # APKs contained in XAPK
+          find work/packages \
+            -type f \
+            -iname "*.apk" \
+            -exec cp {} work/apks/ \;
+
+          # OBB
+          find work/packages \
+            -type f \
+            -iname "*.obb" \
+            -exec cp {} work/obb/ \; \
+            || true
+
+          echo
+          echo "=========================================="
+          echo "DISCOVERED APKs"
+          echo "=========================================="
+
+          find work/apks \
+            -type f \
+            -iname "*.apk" \
+            -print \
+            | sort
+
+          APK_COUNT="$(
+            find work/apks \
+              -type f \
+              -iname "*.apk" |
+            wc -l
+          )"
+
+          echo
+          echo "APK count: $APK_COUNT"
+
+          if [ "$APK_COUNT" -eq 0 ]; then
+            echo "::error::No APK found."
+            exit 1
+          fi
+
+      # ============================================================
+      # INSTALL APKTOOL
+      # ============================================================
+
+      - name: Install Apktool
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          APKTOOL_VERSION="3.0.3"
+
+          wget -q \
+            "https://github.com/iBotPeaches/Apktool/releases/download/v${APKTOOL_VERSION}/apktool_${APKTOOL_VERSION}.jar" \
+            -O /tmp/apktool.jar
+
+          sudo mv \
+            /tmp/apktool.jar \
+            /usr/local/bin/apktool.jar
+
+          cat > /tmp/apktool <<'EOF'
+          #!/bin/sh
+          exec java -jar /usr/local/bin/apktool.jar "$@"
+          EOF
+
+          sudo mv \
+            /tmp/apktool \
+            /usr/local/bin/apktool
+
+          sudo chmod +x \
+            /usr/local/bin/apktool
+
+          apktool --version
+
+      # ============================================================
+      # CREATE REPORT DIRECTORIES
+      # ============================================================
+
+      - name: Prepare report
+        shell: bash
+        run: |
+          mkdir -p \
+            report/apks \
+            report/metadata \
+            report/assets \
+            work/extracted \
+            work/apktool
+
+      # ============================================================
+      # INVENTORY
+      # ============================================================
+
+      - name: Create APK inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          find work/apks \
+            -type f \
+            -iname "*.apk" \
+            | sort \
+            > work/apk-list.txt
+
+          echo "APK inventory:"
+          cat work/apk-list.txt
+
+      # ============================================================
+      # ANALYZE EVERY APK
+      # ============================================================
+
+      - name: Static APK analysis
+        shell: bash
+        run: |
+          set -u
+
+          INDEX=0
+
+          while IFS= read -r APK; do
+
+            INDEX=$((INDEX + 1))
+
+            BASENAME="$(basename "$APK")"
+
+            SAFE_NAME="$(
+              echo "$BASENAME" |
+              sed 's/[^A-Za-z0-9._-]/_/g'
+            )"
+
+            OUT="report/apks/${INDEX}_${SAFE_NAME}"
+            EXTRACT="work/extracted/${INDEX}_${SAFE_NAME}"
+            DECODED="work/apktool/${INDEX}_${SAFE_NAME}"
+
+            mkdir -p \
+              "$OUT" \
+              "$EXTRACT" \
+              "$DECODED"
+
+            echo
+            echo "================================================"
+            echo "ANALYZING: $BASENAME"
+            echo "================================================"
+
+            # --------------------------------------------------------
+            # HASHES
+            # --------------------------------------------------------
+
+            sha256sum "$APK" > "$OUT/sha256.txt"
+            sha1sum "$APK" > "$OUT/sha1.txt"
+            md5sum "$APK" > "$OUT/md5.txt"
+
+            file "$APK" > "$OUT/file-type.txt"
+
+            # --------------------------------------------------------
+            # APK STRUCTURE
+            # --------------------------------------------------------
+
+            unzip -l "$APK" \
+              > "$OUT/zip-list.txt" \
+              2>&1 || true
+
+            # --------------------------------------------------------
+            # ANDROID MANIFEST
+            # --------------------------------------------------------
+
+            aapt dump badging "$APK" \
+              > "$OUT/badging.txt" \
+              2>&1 || true
+
+            aapt dump permissions "$APK" \
+              > "$OUT/permissions.txt" \
+              2>&1 || true
+
+            aapt dump xmltree \
+              "$APK" \
+              AndroidManifest.xml \
+              > "$OUT/manifest-tree.txt" \
+              2>&1 || true
+
+            # --------------------------------------------------------
+            # SIGNATURE
+            # --------------------------------------------------------
+
+            apksigner verify \
+              --verbose \
+              --print-certs \
+              "$APK" \
+              > "$OUT/signing.txt" \
+              2>&1 || true
+
+            # --------------------------------------------------------
+            # EXTRACT
+            # --------------------------------------------------------
+
+            unzip -q \
+              "$APK" \
+              -d "$EXTRACT" \
+              2>/dev/null || true
+
+            find "$EXTRACT" \
+              -type f \
+              | sort \
+              > "$OUT/file-list.txt"
+
+            # --------------------------------------------------------
+            # SPLIT DETECTION
+            # --------------------------------------------------------
+
+            {
+              echo "APK SPLIT ANALYSIS"
+              echo "=================="
+              echo
+
+              echo "Filename:"
+              echo "$BASENAME"
+              echo
+
+              echo "Split-related manifest information:"
+              grep -Ei \
+                'split|isFeatureSplit|configForSplit|featureSplit' \
+                "$OUT/manifest-tree.txt" \
+                || true
+
+              echo
+              echo "Package information:"
+              grep -Ei \
+                'package:|versionCode|versionName|application-label' \
+                "$OUT/badging.txt" \
+                || true
+
+              echo
+              echo "Native ABIs:"
+
+              find "$EXTRACT/lib" \
+                -mindepth 1 \
+                -maxdepth 1 \
+                -type d \
+                -printf '%f\n' \
+                2>/dev/null |
+                sort -u ||
+                true
+
+              echo
+              echo "DEX files:"
+
+              find "$EXTRACT" \
+                -type f \
+                -name "*.dex" \
+                -print |
+                sort
+
+            } > "$OUT/split-analysis.txt"
+
+            # --------------------------------------------------------
+            # APKTOOL
+            # --------------------------------------------------------
+
+            apktool d \
+              --force \
+              "$APK" \
+              -o "$DECODED" \
+              > "$OUT/apktool.log" \
+              2>&1 || true
+
+            # --------------------------------------------------------
+            # ALL STRINGS
+            # --------------------------------------------------------
+
+            {
+              find "$EXTRACT" \
+                -type f \
+                -print0 |
+              while IFS= read -r -d '' F; do
+                strings -a -n 4 "$F" \
+                  2>/dev/null ||
+                  true
+              done
+
+              find "$DECODED" \
+                -type f \
+                -print0 |
+              while IFS= read -r -d '' F; do
+                strings -a -n 4 "$F" \
+                  2>/dev/null ||
+                  true
+              done
+
+            } |
+            sort -u \
+            > "$OUT/all-strings.txt"
+
+            # --------------------------------------------------------
+            # URLS
+            # --------------------------------------------------------
+
+            rg -o \
+              'https?://[^[:space:]\"<>()[\]]+' \
+              "$OUT/all-strings.txt" \
+              2>/dev/null |
+              sort -u \
+              > "$OUT/urls.txt" \
+              || true
+
+            # --------------------------------------------------------
+            # DOMAINS
+            # --------------------------------------------------------
+
+            rg -o \
+              '([A-Za-z0-9-]+\.)+[A-Za-z]{2,}' \
+              "$OUT/all-strings.txt" \
+              2>/dev/null |
+              sort -u \
+              > "$OUT/domains.txt" \
+              || true
+
+            # --------------------------------------------------------
+            # POTENTIAL SECRETS
+            # --------------------------------------------------------
+
+            rg -n -i \
+              '(api[_-]?key|apikey|access[_-]?token|auth[_-]?token|bearer|client[_-]?secret|secret[_-]?key|private[_-]?key|password|passwd|credential)' \
+              "$OUT/all-strings.txt" \
+              > "$OUT/potential-secrets.txt" \
+              || true
+
+            # --------------------------------------------------------
+            # CRYPTO
+            # --------------------------------------------------------
+
+            rg -n -i \
+              '(AES|AES/GCM|AES/CBC|AES/CTR|DES|3DES|ChaCha20|RSA|ECDSA|ECDH|Ed25519|SHA-1|SHA1|SHA-256|SHA256|SHA-512|SHA512|MD5|HMAC|PBKDF|PBKDF2|bcrypt|scrypt|Argon2|KeyStore|SecretKey|MessageDigest|Cipher|SecureRandom)' \
+              "$OUT/all-strings.txt" \
+              > "$OUT/crypto-indicators.txt" \
+              || true
+
+            # --------------------------------------------------------
+            # NETWORKING
+            # --------------------------------------------------------
+
+            rg -n -i \
+              '(http://|https://|ws://|wss://|websocket|okhttp|retrofit|volley|HttpURLConnection|URLConnection|Socket|SSLContext|TrustManager|HostnameVerifier|certificate|pinning|networkSecurityConfig)' \
+              "$OUT/all-strings.txt" \
+              > "$OUT/network-indicators.txt" \
+              || true
+
+            # --------------------------------------------------------
+            # ANDROID SECURITY
+            # --------------------------------------------------------
+
+            rg -n -i \
+              '(android:debuggable|android:allowBackup|android:usesCleartextTraffic|android:exported|android:grantUriPermissions|android:requestLegacyExternalStorage|WebView|addJavascriptInterface|networkSecurityConfig)' \
+              "$OUT/manifest-tree.txt" \
+              > "$OUT/android-security-indicators.txt" \
+              || true
+
+            # --------------------------------------------------------
+            # ENGINE DETECTION
+            # --------------------------------------------------------
+
+            {
+              echo "ENGINE / FRAMEWORK FINGERPRINT"
+              echo "=============================="
+              echo
+
+              echo "UNITY"
+
+              find "$EXTRACT" \
+                -type f \
+                \( \
+                  -name "libunity.so" \
+                  -o -name "libil2cpp.so" \
+                  -o -name "global-metadata.dat" \
+                \) \
+                -print
+
+              echo
+              echo "UNREAL"
+
+              find "$EXTRACT" \
+                -type f \
+                \( \
+                  -iname "*ue4*" \
+                  -o -iname "*ue5*" \
+                  -o -name "libUE4.so" \
+                  -o -name "libUnreal.so" \
+                \) \
+                -print
+
+              echo
+              echo "NATIVE LIBRARIES"
+
+              find "$EXTRACT" \
+                -type f \
+                -name "*.so" \
+                -print
+
+              echo
+              echo "FRAMEWORK STRINGS"
+
+              rg -n -i \
+                '(unity|il2cpp|unreal|ue4|ue5|godot|cocos|flutter|reactnative|xamarin|mono|northstar)' \
+                "$OUT/all-strings.txt" \
+                | head -3000 \
+                || true
+
+            } > "$OUT/engine-fingerprint.txt"
+
+            # --------------------------------------------------------
+            # NATIVE LIBRARY ANALYSIS
+            # --------------------------------------------------------
+
+            find "$EXTRACT" \
+              -type f \
+              -name "*.so" \
+              -print \
+              > "$OUT/native-libraries.txt"
+
+            while IFS= read -r SO; do
+
+              [ -f "$SO" ] || continue
+
+              SO_NAME="$(basename "$SO")"
+
+              SAFE_SO="$(
+                echo "$SO_NAME" |
+                sed 's/[^A-Za-z0-9._-]/_/g'
+              )"
+
+              {
+                echo "FILE"
+                file "$SO"
+
+                echo
+                echo "ELF HEADER"
+                readelf -h "$SO" \
+                  2>/dev/null ||
+                  true
+
+                echo
+                echo "IMPORTED SYMBOLS"
+
+                readelf -Ws "$SO" \
+                  2>/dev/null |
+                  grep ' UND ' |
+                  head -2000 ||
+                  true
+
+                echo
+                echo "EXPORTED SYMBOLS"
+
+                readelf -Ws "$SO" \
+                  2>/dev/null |
+                  grep -v ' UND ' |
+                  head -2000 ||
+                  true
+
+                echo
+                echo "STRINGS"
+
+                strings -a -n 4 "$SO" \
+                  2>/dev/null ||
+                  true
+
+              } > "$OUT/native_${SAFE_SO}.txt"
+
+            done < "$OUT/native-libraries.txt"
+
+            # --------------------------------------------------------
+            # OBFUSCATION / PACKING
+            # --------------------------------------------------------
+
+            rg -n -i \
+              '(packer|packed|obfusc|dexguard|allatori|proguard|r8|encrypt|decrypt|decode|reflection|dynamicload|loadlibrary|dlopen|dlsym|ClassLoader)' \
+              "$OUT/all-strings.txt" \
+              > "$OUT/obfuscation.txt" \
+              || true
+
+            # --------------------------------------------------------
+            # INTERESTING FILES
+            # --------------------------------------------------------
+
+            find "$EXTRACT" \
+              -type f \
+              \( \
+                -iname "*.pem" \
+                -o -iname "*.key" \
+                -o -iname "*.p12" \
+                -o -iname "*.pfx" \
+                -o -iname "*.jks" \
+                -o -iname "*.keystore" \
+                -o -iname "*.json" \
+                -o -iname "*.db" \
+                -o -iname "*.sqlite" \
+                -o -iname "*.dat" \
+                -o -iname "*.bin" \
+                -o -iname "*.bundle" \
+                -o -iname "*.bytes" \
+              \) \
+              -print |
+              sort \
+              > "$OUT/interesting-files.txt"
+
+            # --------------------------------------------------------
+            # SUMMARY
+            # --------------------------------------------------------
+
+            {
+              echo "# APK Security Report"
+              echo
+
+              echo "## File"
+              echo "$BASENAME"
+              echo
+
+              echo "## SHA-256"
+              cat "$OUT/sha256.txt"
+              echo
+
+              echo "## Split Analysis"
+              cat "$OUT/split-analysis.txt"
+              echo
+
+              echo "## Engine"
+              cat "$OUT/engine-fingerprint.txt"
+              echo
+
+              echo "## Potential Secrets"
+              cat "$OUT/potential-secrets.txt"
+              echo
+
+              echo "## URLs"
+              cat "$OUT/urls.txt"
+              echo
+
+              echo "## Domains"
+              cat "$OUT/domains.txt"
+              echo
+
+              echo "## Crypto"
+              cat "$OUT/crypto-indicators.txt"
+              echo
+
+              echo "## Network"
+              cat "$OUT/network-indicators.txt"
+              echo
+
+              echo "## Android Security"
+              cat "$OUT/android-security-indicators.txt"
+              echo
+
+              echo "## Obfuscation"
+              cat "$OUT/obfuscation.txt"
+              echo
+
+              echo "## Interesting Files"
+              cat "$OUT/interesting-files.txt"
+
+            } > "$OUT/security-report.md"
+
+          done < work/apk-list.txt
+
+      # ============================================================
+      # GLOBAL REPORT
+      # ============================================================
+
+      - name: Build final report
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          {
+            echo "# APK SECURITY LAB"
+            echo
+            echo "Generated: $(date -u)"
+            echo
+
+            echo "## Downloaded package"
+            file work/download/downloaded-file
+            du -h work/download/downloaded-file
+            echo
+
+            echo "## Discovered APKs"
+            cat work/apk-list.txt
+            echo
+
+            echo "## Individual reports"
+
+            find report/apks \
+              -name "security-report.md" \
+              -print |
+              sort |
+              while IFS= read -r REPORT; do
+
+                echo
+                echo "============================================"
+                echo "$REPORT"
+                echo "============================================"
+
+                cat "$REPORT"
+
+              done
+
+          } > report/FINAL-REPORT.md
+
+      # ============================================================
+      # UPLOAD
+      # ============================================================
+
+      - name: Upload analysis
+        uses: actions/upload-artifact@v4
+        with:
+          name: imvu-apk-security-analysis
+          path: |
+            report/
+            work/apk-list.txt
+          retention-days: 14
+          compression-level: 6
+
+      # ============================================================
+      # SUMMARY
+      # ============================================================
+
+      - name: Final summary
+        shell: bash
+        run: |
+          echo
+          echo "=============================================="
+          echo "       APK SECURITY ANALYSIS COMPLETE"
+          echo "=============================================="
+          echo
+          echo "Downloaded:"
+          file work/download/downloaded-file
+          echo
+          echo "Discovered APKs:"
+          cat work/apk-list.txt
+          echo
+          echo "Results are available in:"
+          echo "  imvu-apk-security-analysis"
+          echo
+          echo "Main report:"
+          echo "  report/FINAL-REPORT.md"
+          echo
+          echo "=============================================="
