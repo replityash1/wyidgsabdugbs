@@ -7,24 +7,31 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 
-SYLLABUS_FILE = ROOT / "syllabus" / "ras_2026.json"
-OUTPUT_FILE = ROOT / "work" / "topics.json"
+SYLLABUS = ROOT / "syllabus" / "ras_2026.json"
+WORK = ROOT / "work"
+
+TOPICS = WORK / "topics.json"
+BATCHES = WORK / "batches.json"
 
 
-def walk_topics(
+def walk(
     subject: dict[str, Any],
     topic: dict[str, Any],
-    parent_titles: list[str],
+    parents: list[str],
     output: list[dict[str, Any]],
 ) -> None:
 
-    children = topic.get("children", []) or []
+    children = topic.get(
+        "children",
+        [],
+    ) or []
 
-    current_path = parent_titles + [
-        topic.get("title_en", "")
+    path = parents + [
+        topic["title_en"]
     ]
 
     if not children:
+
         output.append(
             {
                 "subject_id": subject["id"],
@@ -33,22 +40,23 @@ def walk_topics(
                 "topic_id": topic["id"],
                 "topic_title_hi": topic["title_hi"],
                 "topic_title_en": topic["title_en"],
-                "path_en": current_path,
+                "path": path,
             }
         )
 
     for child in children:
-        walk_topics(
+        walk(
             subject,
             child,
-            current_path,
+            path,
             output,
         )
 
 
 def main() -> None:
+
     data = json.loads(
-        SYLLABUS_FILE.read_text(
+        SYLLABUS.read_text(
             encoding="utf-8"
         )
     )
@@ -56,20 +64,25 @@ def main() -> None:
     topics: list[dict[str, Any]] = []
 
     for subject in data["subjects"]:
-        for topic in subject.get("topics", []):
-            walk_topics(
+
+        for topic in subject.get(
+            "topics",
+            [],
+        ):
+
+            walk(
                 subject,
                 topic,
                 [],
                 topics,
             )
 
-    OUTPUT_FILE.parent.mkdir(
+    WORK.mkdir(
         parents=True,
         exist_ok=True,
     )
 
-    OUTPUT_FILE.write_text(
+    TOPICS.write_text(
         json.dumps(
             topics,
             ensure_ascii=False,
@@ -78,8 +91,67 @@ def main() -> None:
         encoding="utf-8",
     )
 
+    # ------------------------------------------------------------
+    # BATCH TOPICS
+    # ------------------------------------------------------------
+
+    config = json.loads(
+        (
+            ROOT
+            / "config"
+            / "config.json"
+        ).read_text(
+            encoding="utf-8"
+        )
+    )
+
+    per_runner = int(
+        config["pipeline"]["topics_per_runner"]
+    )
+
+    batches = []
+
+    for index in range(
+        0,
+        len(topics),
+        per_runner,
+    ):
+
+        group = topics[
+            index:index + per_runner
+        ]
+
+        batches.append(
+            {
+                "batch_id": (
+                    index // per_runner
+                ),
+                "topic_ids": [
+                    item["topic_id"]
+                    for item in group
+                ],
+            }
+        )
+
+    BATCHES.write_text(
+        json.dumps(
+            batches,
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
     print(
-        f"Generated {len(topics)} leaf topics."
+        f"Topics: {len(topics)}"
+    )
+
+    print(
+        f"Batches: {len(batches)}"
+    )
+
+    print(
+        f"Topics per runner: {per_runner}"
     )
 
 
