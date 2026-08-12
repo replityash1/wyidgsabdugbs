@@ -1,3 +1,4 @@
+```yaml
 name: Build RAS Knowledge Book
 
 on:
@@ -5,13 +6,13 @@ on:
     inputs:
 
       subject_filter:
-        description: "Optional subject ID. Example: rajasthan_history_culture"
+        description: "Optional subject ID. Leave blank for complete syllabus."
         required: false
         default: ""
         type: string
 
       topics_per_runner:
-        description: "Topics handled by each runner"
+        description: "Number of topics handled by each runner"
         required: false
         default: "2"
         type: string
@@ -26,11 +27,11 @@ permissions:
   contents: read
 
 
-jobs:
+# ================================================================
+# PREPARE
+# ================================================================
 
-  # ============================================================
-  # PREPARE
-  # ============================================================
+jobs:
 
   prepare:
 
@@ -51,19 +52,31 @@ jobs:
 
       - name: Flatten syllabus
         run: |
+          set -euo pipefail
+
           python scripts/flatten_syllabus.py
 
-      - name: Apply workflow settings
+          echo
+          echo "Total syllabus topics:"
+          jq 'length' work/topics.json
+
+      # ------------------------------------------------------------
+      # APPLY FILTER + BUILD BATCHES
+      # ------------------------------------------------------------
+
+      - name: Build batches
+        id: make_matrix
         env:
-          TOPICS_PER_RUNNER: ${{ inputs.topics_per_runner }}
           SUBJECT_FILTER: ${{ inputs.subject_filter }}
+          TOPICS_PER_RUNNER: ${{ inputs.topics_per_runner }}
+        shell: bash
         run: |
+          set -euo pipefail
+
           python - <<'PY'
           import json
           import os
           from pathlib import Path
-
-          root = Path(".")
 
           topics = json.loads(
               Path("work/topics.json").read_text(
@@ -84,30 +97,44 @@ jobs:
                   == subject_filter
               ]
 
-          per_runner = int(
-              os.environ.get(
-                  "TOPICS_PER_RUNNER",
-                  "2"
+          if not topics:
+              raise SystemExit(
+                  "No topics matched the selected subject_filter."
               )
-          )
+
+          try:
+              topics_per_runner = int(
+                  os.environ.get(
+                      "TOPICS_PER_RUNNER",
+                      "2"
+                  )
+              )
+          except ValueError:
+              raise SystemExit(
+                  "topics_per_runner must be an integer."
+              )
+
+          if topics_per_runner < 1:
+              raise SystemExit(
+                  "topics_per_runner must be >= 1."
+              )
 
           batches = []
 
-          for i in range(
+          for start in range(
               0,
               len(topics),
-              per_runner
+              topics_per_runner
           ):
-
               group = topics[
-                  i:i + per_runner
+                  start:start + topics_per_runner
               ]
 
               batches.append(
                   {
-                      "batch_id":
-                          i // per_runner,
-
+                      "batch_id": (
+                          start // topics_per_runner
+                      ),
                       "topic_ids": [
                           topic["topic_id"]
                           for topic in group
@@ -115,9 +142,7 @@ jobs:
                   }
               )
 
-          Path(
-              "work/batches.json"
-          ).write_text(
+          Path("work/batches.json").write_text(
               json.dumps(
                   batches,
                   ensure_ascii=False,
@@ -136,36 +161,117 @@ jobs:
               ]
           }
 
-          output = json.dumps(
+          # IMPORTANT:
+          # The matrix MUST be a single-line JSON value.
+          compact_matrix = json.dumps(
               matrix,
-              separators=(
-                  ",",
-                  ":"
-              )
+              ensure_ascii=False,
+              separators=(",", ":")
           )
 
-          with open(
-              os.environ["GITHUB_OUTPUT"],
-              "a"
-          ) as f:
-              f.write(
-                  f"matrix={output}\n"
-              )
+          Path("work/matrix.json").write_text(
+              compact_matrix,
+              encoding="utf-8"
+          )
 
+          # Also save the filtered topic list so every runner
+          # uses exactly the same topic selection.
+          Path("work/selected_topics.json").write_text(
+              json.dumps(
+                  topics,
+                  ensure_ascii=False,
+                  indent=2
+              ),
+              encoding="utf-8"
+          )
+
+          print()
+          print("==========================================")
+          print("RAS BOOK PLAN")
+          print("==========================================")
           print(
-              f"Selected topics: "
-              f"{len(topics)}"
+              f"Subject filter: "
+              f"{subject_filter or '[ALL SUBJECTS]'}"
           )
-
           print(
-              f"Batches: "
-              f"{len(batches)}"
+              f"Topics selected: {len(topics)}"
           )
-
           print(
               f"Topics per runner: "
-              f"{per_runner}"
+              f"{topics_per_runner}"
           )
+          print(
+              f"Number of batches: "
+              f"{len(batches)}"
+          )
+          print()
+          print("Matrix:")
+          print(compact_matrix)
+
+          print()
+          print("Batches:")
+          for batch in batches:
+              print(
+                  f"  Batch {batch['batch_id']}: "
+                  f"{len(batch['topic_ids'])} topics"
+              )
+
+          # Write EXACTLY one line to GITHUB_OUTPUT.
+          github_output = os.environ["GITHUB_OUTPUT"]
+
+          with open(
+              github_output,
+              "a",
+              encoding="utf-8"
+          ) as f:
+              f.write(
+                  "matrix="
+                  + compact_matrix
+                  + "\n"
+              )
+          PY
+
+          echo
+          echo "Checking generated matrix:"
+          cat work/matrix.json
+
+          echo
+          echo "Validating matrix JSON:"
+          jq empty work/matrix.json
+
+          echo
+          echo "Matrix size:"
+          wc -c < work/matrix.json
+
+          echo
+          echo "GitHub output:"
+          grep '^matrix=' "$GITHUB_OUTPUT"
+
+      # ------------------------------------------------------------
+      # DEBUG OUTPUT
+      # ------------------------------------------------------------
+
+      - name: Verify matrix output
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if ! grep -q '^matrix=' "$GITHUB_OUTPUT"; then
+              echo "::error::matrix was not written to GITHUB_OUTPUT."
+              exit 1
+          fi
+
+          MATRIX_VALUE="$(
+              grep '^matrix=' "$GITHUB_OUTPUT" |
+              sed 's/^matrix=//'
+          )"
+
+          if [ -z "$MATRIX_VALUE" ]; then
+              echo "::error::matrix output is empty."
+              exit 1
+          fi
+
+          echo "Matrix output is present."
 
       - name: Upload planning files
         uses: actions/upload-artifact@v4
@@ -173,13 +279,15 @@ jobs:
           name: ras-book-plan
           path: |
             work/topics.json
+            work/selected_topics.json
             work/batches.json
+            work/matrix.json
           retention-days: 3
 
 
-  # ============================================================
+  # ================================================================
   # RESEARCH + WRITE
-  # ============================================================
+  # ================================================================
 
   research_and_write:
 
@@ -201,21 +309,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # ----------------------------------------------------------
+      # ------------------------------------------------------------
       # PYTHON
-      # ----------------------------------------------------------
+      # ------------------------------------------------------------
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      # ----------------------------------------------------------
+      # ------------------------------------------------------------
       # PYTHON DEPENDENCIES
-      # ----------------------------------------------------------
+      # ------------------------------------------------------------
 
       - name: Install Python dependencies
         run: |
+          set -euo pipefail
+
           python -m pip install --upgrade pip
 
           pip install \
@@ -224,12 +334,14 @@ jobs:
             trafilatura \
             ddgs
 
-      # ----------------------------------------------------------
+      # ------------------------------------------------------------
       # SYSTEM DEPENDENCIES
-      # ----------------------------------------------------------
+      # ------------------------------------------------------------
 
-      - name: Install build dependencies
+      - name: Install system dependencies
         run: |
+          set -euo pipefail
+
           sudo apt-get update
 
           sudo apt-get install -y \
@@ -242,20 +354,125 @@ jobs:
             fonts-noto-core \
             fonts-noto-extra
 
-      # ----------------------------------------------------------
-      # LLAMA.CPP
-      # ----------------------------------------------------------
+      # ------------------------------------------------------------
+      # RESTORE THE EXACT SELECTED TOPICS
+      # ------------------------------------------------------------
+
+      - name: Create selected topic files
+        env:
+          SUBJECT_FILTER: ${{ inputs.subject_filter }}
+          TOPICS_PER_RUNNER: ${{ inputs.topics_per_runner }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python scripts/flatten_syllabus.py
+
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          all_topics = json.loads(
+              Path("work/topics.json").read_text(
+                  encoding="utf-8"
+              )
+          )
+
+          subject_filter = os.environ.get(
+              "SUBJECT_FILTER",
+              ""
+          ).strip()
+
+          if subject_filter:
+              selected = [
+                  topic
+                  for topic in all_topics
+                  if topic["subject_id"]
+                  == subject_filter
+              ]
+          else:
+              selected = all_topics
+
+          Path(
+              "work/selected_topics.json"
+          ).write_text(
+              json.dumps(
+                  selected,
+                  ensure_ascii=False,
+                  indent=2
+              ),
+              encoding="utf-8"
+          )
+
+          per_runner = int(
+              os.environ.get(
+                  "TOPICS_PER_RUNNER",
+                  "2"
+              )
+          )
+
+          batches = []
+
+          for start in range(
+              0,
+              len(selected),
+              per_runner
+          ):
+              group = selected[
+                  start:start + per_runner
+              ]
+
+              batches.append(
+                  {
+                      "batch_id":
+                          start // per_runner,
+                      "topic_ids": [
+                          topic["topic_id"]
+                          for topic in group
+                      ]
+                  }
+              )
+
+          Path(
+              "work/batches.json"
+          ).write_text(
+              json.dumps(
+                  batches,
+                  ensure_ascii=False,
+                  indent=2
+              ),
+              encoding="utf-8"
+          )
+          PY
+
+          echo "Selected topics:"
+          jq length work/selected_topics.json
+
+          echo
+          echo "Current batch:"
+          jq \
+            --argjson id '${{ matrix.batch_id }}' \
+            '.[] | select(.batch_id == $id)' \
+            work/batches.json
+
+      # ------------------------------------------------------------
+      # BUILD LLAMA.CPP
+      # ------------------------------------------------------------
 
       - name: Cache llama.cpp
         id: llama_cache
         uses: actions/cache@v4
         with:
           path: llama.cpp
-          key: llama-cpp-ubuntu-${{ runner.arch }}-qwen3
+          key: llama-cpp-ubuntu-24.04-qwen3-v1
 
       - name: Build llama.cpp
         if: steps.llama_cache.outputs.cache-hit != 'true'
+        shell: bash
         run: |
+          set -euo pipefail
+
           git clone \
             --depth 1 \
             https://github.com/ggml-org/llama.cpp.git
@@ -271,11 +488,21 @@ jobs:
             --target llama-server \
             -j2
 
-      # ----------------------------------------------------------
-      # MODEL
-      # ----------------------------------------------------------
+      - name: Check llama-server
+        shell: bash
+        run: |
+          set -euo pipefail
 
-      - name: Cache Qwen3-14B GGUF
+          test -x \
+            llama.cpp/build/bin/llama-server
+
+          echo "llama-server found."
+
+      # ------------------------------------------------------------
+      # DOWNLOAD / CACHE MODEL
+      # ------------------------------------------------------------
+
+      - name: Cache Qwen3-14B
         id: model_cache
         uses: actions/cache@v4
         with:
@@ -284,10 +511,13 @@ jobs:
 
       - name: Download Qwen3-14B
         if: steps.model_cache.outputs.cache-hit != 'true'
+        shell: bash
         run: |
+          set -euo pipefail
+
           mkdir -p models
 
-          echo "Downloading official Qwen GGUF..."
+          echo "Downloading Qwen3-14B Q4_K_M..."
 
           wget \
             -c \
@@ -295,16 +525,44 @@ jobs:
             "https://huggingface.co/Qwen/Qwen3-14B-GGUF/resolve/main/Qwen3-14B-Q4_K_M.gguf?download=true" \
             -O models/Qwen3-14B-Q4_K_M.gguf
 
+          echo
+          echo "Model:"
           ls -lh models/
 
-      # ----------------------------------------------------------
-      # START LOCAL MODEL
-      # ----------------------------------------------------------
-
-      - name: Start local Qwen server
+      - name: Verify model
         shell: bash
         run: |
           set -euo pipefail
+
+          MODEL="models/Qwen3-14B-Q4_K_M.gguf"
+
+          if [ ! -f "$MODEL" ]; then
+              echo "::error::Model file missing."
+              exit 1
+          fi
+
+          SIZE=$(stat -c%s "$MODEL")
+
+          echo "Model size:"
+          echo "$SIZE bytes"
+
+          # The model should be several GB.
+          # This catches partial/HTML downloads.
+          if [ "$SIZE" -lt 5000000000 ]; then
+              echo "::error::Model appears too small."
+              exit 1
+          fi
+
+      # ------------------------------------------------------------
+      # START LOCAL MODEL
+      # ------------------------------------------------------------
+
+      - name: Start Qwen server
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          mkdir -p logs
 
           ./llama.cpp/build/bin/llama-server \
             -m models/Qwen3-14B-Q4_K_M.gguf \
@@ -314,81 +572,89 @@ jobs:
             -ngl 0 \
             --host 127.0.0.1 \
             --port 8080 \
-            > work-llama.log 2>&1 &
+            > logs/llama.log 2>&1 &
 
           echo $! > llama.pid
 
-          echo "Waiting for Qwen..."
+          echo "Waiting for local Qwen server..."
 
-          for i in $(seq 1 120); do
+          READY=0
 
-            if curl \
-              -s \
-              http://127.0.0.1:8080/health \
-              | grep -q 'ok'; then
+          for i in $(seq 1 180); do
 
-              echo "Qwen server ready."
+              if curl \
+                -sf \
+                http://127.0.0.1:8080/health \
+                >/dev/null; then
 
-              break
-            fi
+                  READY=1
+                  echo "Qwen server is ready."
+                  break
+              fi
 
-            sleep 2
-
-            if [ "$i" -eq 120 ]; then
-              echo "Qwen failed to start."
-
-              cat work-llama.log
-
-              exit 1
-            fi
+              sleep 2
 
           done
 
-      # ----------------------------------------------------------
-      # RECREATE TOPIC MATRIX
-      # ----------------------------------------------------------
+          if [ "$READY" -ne 1 ]; then
+              echo "::error::Qwen server failed to become ready."
 
-      - name: Flatten syllabus
-        run: |
-          python scripts/flatten_syllabus.py
+              echo
+              echo "========== LLAMA LOG =========="
+              cat logs/llama.log
 
-      # ----------------------------------------------------------
-      # RUN BATCH
-      # ----------------------------------------------------------
+              exit 1
+          fi
+
+      # ------------------------------------------------------------
+      # RUN CURRENT BATCH
+      # ------------------------------------------------------------
 
       - name: Run research batch
+        shell: bash
         run: |
+          set -euo pipefail
+
           python scripts/run_batch.py \
             "${{ matrix.batch_id }}"
 
-      # ----------------------------------------------------------
-      # SHOW MODEL LOG
-      # ----------------------------------------------------------
+      # ------------------------------------------------------------
+      # UPLOAD BATCH
+      # ------------------------------------------------------------
 
       - name: Upload batch result
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: batch-${{ matrix.batch_id }}
-          path: work/results/
-          retention-days: 3
+          path: |
+            work/results/
+          retention-days: 7
           compression-level: 6
 
-      - name: Upload llama log
+      # ------------------------------------------------------------
+      # UPLOAD MODEL LOG
+      # ------------------------------------------------------------
+
+      - name: Upload model log
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: llama-log-${{ matrix.batch_id }}
-          path: work-llama.log
-          retention-days: 2
+          path: |
+            logs/llama.log
+          retention-days: 3
 
 
-  # ============================================================
-  # BUILD BOOK
-  # ============================================================
+  # ================================================================
+  # ASSEMBLE
+  # ================================================================
 
   assemble:
 
     needs: research_and_write
+
+    if: ${{ always() }}
 
     runs-on: ubuntu-latest
 
@@ -404,33 +670,36 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install book tools
+      - name: Install PDF tools
+        shell: bash
         run: |
+          set -euo pipefail
+
           sudo apt-get update
 
           sudo apt-get install -y \
             fonts-noto-core \
-            fonts-noto-extra
+            fonts-noto-extra \
+            python3-pip
 
           python -m pip install \
-            --upgrade \
-            pip \
+            --upgrade pip \
             weasyprint
 
-      # ----------------------------------------------------------
+      # ------------------------------------------------------------
       # DOWNLOAD ALL BATCHES
-      # ----------------------------------------------------------
+      # ------------------------------------------------------------
 
-      - name: Download research batches
+      - name: Download batch artifacts
         uses: actions/download-artifact@v4
         with:
-          path: collected
           pattern: batch-*
+          path: collected
           merge-multiple: true
 
-      # ----------------------------------------------------------
-      # RESTORE TOPIC RESULTS
-      # ----------------------------------------------------------
+      # ------------------------------------------------------------
+      # RESTORE RESULTS
+      # ------------------------------------------------------------
 
       - name: Restore results
         shell: bash
@@ -441,51 +710,52 @@ jobs:
 
           find collected \
             -type f \
-            -name "research.json" \
-            -o \
-            -name "sources.json" \
-            -o \
-            -name "chapter.md" \
-            -o \
-            -name "audit.json" |
-          while read -r file; do
+            \( \
+              -name "research.json" \
+              -o -name "sources.json" \
+              -o -name "chapter.md" \
+              -o -name "audit.json" \
+            \) \
+            -print |
+          while IFS= read -r FILE; do
 
-            topic_dir="$(
-              basename \
-              "$(dirname "$file")"
-            )"
+              TOPIC_DIR="$(basename "$(dirname "$FILE")")"
 
-            mkdir -p \
-              "work/results/$topic_dir"
+              mkdir -p \
+                "work/results/$TOPIC_DIR"
 
-            cp \
-              "$file" \
-              "work/results/$topic_dir/"
+              cp \
+                "$FILE" \
+                "work/results/$TOPIC_DIR/"
 
           done
 
-      # ----------------------------------------------------------
-      # REBUILD TOPIC LIST
-      # ----------------------------------------------------------
+          echo "Restored result directories:"
+          find work/results \
+            -maxdepth 2 \
+            -type f \
+            | sort
 
-      - name: Flatten syllabus
-        run: |
-          python scripts/flatten_syllabus.py
-
-      # ----------------------------------------------------------
+      # ------------------------------------------------------------
       # BUILD BOOK
-      # ----------------------------------------------------------
+      # ------------------------------------------------------------
 
       - name: Build book
+        shell: bash
         run: |
+          set -euo pipefail
+
           python scripts/build_book.py
 
-      # ----------------------------------------------------------
-      # CREATE PDF
-      # ----------------------------------------------------------
+      # ------------------------------------------------------------
+      # PDF
+      # ------------------------------------------------------------
 
       - name: Convert HTML to PDF
+        shell: bash
         run: |
+          set -euo pipefail
+
           python - <<'PY'
           from pathlib import Path
           from weasyprint import HTML
@@ -498,6 +768,11 @@ jobs:
               "output/RAS_Pre_2026_Book.pdf"
           )
 
+          if not html_file.exists():
+              raise SystemExit(
+                  "HTML book was not generated."
+              )
+
           HTML(
               filename=str(html_file)
           ).write_pdf(
@@ -505,17 +780,19 @@ jobs:
           )
 
           print(
-              f"PDF created: {pdf_file}"
+              f"Created {pdf_file}"
           )
           PY
 
-      # ----------------------------------------------------------
-      # FINAL REPORT
-      # ----------------------------------------------------------
+      # ------------------------------------------------------------
+      # AUDIT SUMMARY
+      # ------------------------------------------------------------
 
-      - name: Create final audit summary
+      - name: Create audit summary
         shell: bash
         run: |
+          set -euo pipefail
+
           python - <<'PY'
           from pathlib import Path
           import json
@@ -538,30 +815,31 @@ jobs:
                           )
                       )
                   )
-
-              except Exception:
-                  pass
-
-          total = len(audits)
+              except Exception as exc:
+                  print(
+                      f"Could not read {file}: {exc}"
+                  )
 
           passed = sum(
-              a.get("status") == "PASS"
-              for a in audits
+              audit.get("status") == "PASS"
+              for audit in audits
           )
 
-          failed = total - passed
+          revised = sum(
+              audit.get("status") != "PASS"
+              for audit in audits
+          )
 
-          report = f"""# RAS Book Build Summary
-
-          Topics processed: {total}
-
-          Passed local citation audit: {passed}
-
-          Requiring review: {failed}
-
-          ## Review Topics
-
-          """
+          lines = [
+              "# RAS Book Audit Summary",
+              "",
+              f"Topics processed: {len(audits)}",
+              f"Passed: {passed}",
+              f"Needs review: {revised}",
+              "",
+              "## Topics needing review",
+              ""
+          ]
 
           for audit in audits:
 
@@ -569,28 +847,33 @@ jobs:
                   "status"
               ) != "PASS":
 
-                  report += (
-                      f"- {audit.get('topic_id')}\n"
+                  lines.append(
+                      "- "
+                      + audit.get(
+                          "topic_id",
+                          "unknown"
+                      )
                   )
 
           Path(
               "output/AUDIT-SUMMARY.md"
           ).write_text(
-              report,
+              "\n".join(lines),
               encoding="utf-8"
           )
           PY
 
-      # ----------------------------------------------------------
+      # ------------------------------------------------------------
       # UPLOAD FINAL BOOK
-      # ----------------------------------------------------------
+      # ------------------------------------------------------------
 
       - name: Upload final book
         uses: actions/upload-artifact@v4
         with:
-          name: RAS-Pre-2026-Complete-Book
+          name: RAS-Pre-2026-Knowledge-Book
           path: |
             output/
             work/results/
           retention-days: 30
           compression-level: 6
+```
